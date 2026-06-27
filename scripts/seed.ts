@@ -41,6 +41,15 @@ async function main() {
   for (const bull of seedBulls) {
     if (reset || !existingBulls.has(bull.id)) {
       await repo.upsertBull(bull);
+    } else {
+      const current = (await repo.getBull(bull.id)) ?? bull;
+      await repo.upsertBull({
+        ...current,
+        name: bull.name,
+        ticker: bull.ticker,
+        image: bull.image,
+        seasonRank: bull.seasonRank,
+      });
     }
   }
 
