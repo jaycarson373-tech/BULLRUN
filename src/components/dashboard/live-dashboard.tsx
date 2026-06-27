@@ -261,41 +261,14 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ArenaShowcase() {
-  return (
-    <section className="border-b border-[#241013] bg-black">
-      <div className="mx-auto grid max-w-7xl gap-3 px-4 py-6 sm:px-6 lg:grid-cols-[1.25fr_0.75fr] lg:px-8">
-        <div className="relative min-h-[310px] overflow-hidden border border-[#301316] bg-[#080808]">
-          <img src="/images/bullrun-arena-gate.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.2),rgba(0,0,0,0.68))]" />
-          <div className="absolute bottom-5 left-5">
-            <p className="text-sm font-black tracking-[0.2em] text-[#df101c]">BULLRUN ARENA</p>
-            <p className="mt-1 text-3xl font-black text-[#f7f7f2]">SEASON ONE</p>
-          </div>
-        </div>
-        <div className="grid gap-3">
-          <div className="relative min-h-[148px] overflow-hidden border border-[#301316] bg-[#080808]">
-            <img src="/images/bullrun-arena-live.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
-            <div className="absolute inset-0 bg-black/20" />
-          </div>
-          <div className="relative min-h-[148px] overflow-hidden border border-[#301316] bg-[#080808]">
-            <img src="/images/bullrun-arena-smoke.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
-            <div className="absolute inset-0 bg-black/20" />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
   const sorted = [...currentRace.competitors].sort((a, b) => b.percentChange - a.percentChange);
   const leader = sorted[0];
 
   return (
     <section id="live-race" className="relative overflow-hidden border-b border-[#241013] bg-[#070707]">
-      <img src="/images/bullrun-arena-live.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.42]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505_0%,rgba(5,5,5,0.66)_42%,#050505_100%)]" />
+      <img src="/images/bullrun-arena-live.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.34]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505_0%,rgba(5,5,5,0.72)_42%,#050505_100%)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
@@ -374,8 +347,8 @@ function HowItWorks() {
 
   return (
     <section id="how-it-works" className="relative overflow-hidden border-b border-[#241013] bg-[#050505]">
-      <img src="/images/bullrun-arena-gate.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.42]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.62),#050505)]" />
+      <img src="/images/bullrun-arena-gate.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.36]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.68),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-7">
           <p className="text-sm font-semibold text-[#df101c]">How It Works</p>
@@ -524,8 +497,8 @@ function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number
 function Treasury({ summary }: { summary: DistributionSummary }) {
   return (
     <section className="relative overflow-hidden bg-[#050505]">
-      <img src="/images/bullrun-arena-floor.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.48]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505,rgba(5,5,5,0.58),#050505)]" />
+      <img src="/images/bullrun-arena-floor.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.38]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505,rgba(5,5,5,0.66),#050505)]" />
       <div className="relative mx-auto px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto mb-7 max-w-7xl">
           <p className="text-sm font-semibold text-[#df101c]">Championship Vault</p>
@@ -603,8 +576,8 @@ function PreviousWinners({ history }: { history: RaceHistoryView[] }) {
 function FooterCta() {
   return (
     <section className="relative overflow-hidden border-t border-[#241013] bg-black">
-      <img src="/images/bullrun-arena-smoke.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.5]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.58),#050505)]" />
+      <img src="/images/bullrun-arena-smoke.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.4]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.66),#050505)]" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-5 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
           <p className="text-sm font-semibold text-[#df101c]">The arena opens soon.</p>
@@ -688,7 +661,6 @@ export function LiveDashboard({ initialData }: { initialData: DashboardData }) {
   return (
     <main className="min-h-screen bg-[#050505] text-[#f7f7f2]">
       <Hero currentRace={currentRace} now={now} />
-      <ArenaShowcase />
       <CurrentRace currentRace={currentRace} />
       <HowItWorks />
       <BullsGrid standings={data.standings} />
@@ -709,7 +681,6 @@ export function LiveRacePage({ initialData }: { initialData: DashboardData }) {
   return (
     <main className="min-h-screen bg-[#050505] text-[#f7f7f2]">
       <Hero currentRace={currentRace} now={now} />
-      <ArenaShowcase />
       <CurrentRace currentRace={currentRace} />
       <RaceRules />
       <Upcoming upcoming={data.upcomingRaces.slice(0, 2)} now={now} />
