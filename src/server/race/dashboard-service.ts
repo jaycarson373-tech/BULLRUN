@@ -34,13 +34,17 @@ function isInsideRaceWindow(race: Race, now: Date): boolean {
   return start <= now && end > now;
 }
 
-function competitorsForRace(race: Race, bulls: Bull[], currentSnapshot = race.liveMarketCaps): RaceCompetitorView[] {
+function competitorsForRace(race: Race, bulls: Bull[], currentSnapshot = race.liveMarketCaps, at = new Date()): RaceCompetitorView[] {
   const byId = mapBulls(bulls);
   const snapshotWithChanges = currentSnapshot ? addPercentChanges(race.snapshotStart, currentSnapshot) : null;
   const marketCaps = race.bullIds.map((id) => snapshotWithChanges?.[id]?.marketCap ?? 0);
-  const minMarketCap = Math.min(...marketCaps, 0);
+  const minMarketCap = Math.min(...marketCaps);
   const maxMarketCap = Math.max(...marketCaps, 1);
   const spread = Math.max(1, maxMarketCap - minMarketCap);
+  const start = new Date(race.startTime).getTime();
+  const end = new Date(race.endTime).getTime();
+  const elapsedRatio = clamp((at.getTime() - start) / Math.max(1, end - start), 0, 1);
+  const raceProgressPosition = 8 + elapsedRatio * 82;
 
   return race.bullIds.map((id) => {
     const bull = byId.get(id);
@@ -51,14 +55,15 @@ function competitorsForRace(race: Race, bulls: Bull[], currentSnapshot = race.li
     const current = snapshotWithChanges?.[id];
     const percent = current?.percentChange ?? 0;
     const currentMarketCap = current?.marketCap ?? 0;
-    const normalized = clamp(((currentMarketCap - minMarketCap) / spread) * 76 + 12, 6, 94);
+    const leaderOffset = ((currentMarketCap - minMarketCap) / spread - 0.5) * 10;
+    const position = clamp(raceProgressPosition + leaderOffset, 6, 92);
 
     return {
       bull,
       startMarketCap: race.snapshotStart?.[id]?.marketCap ?? null,
       currentMarketCap,
       percentChange: percent,
-      position: normalized,
+      position,
     };
   });
 }
@@ -107,7 +112,7 @@ export async function getCurrentRaceView(repo = getRepository()): Promise<Curren
   return {
     race: active,
     status: displayStatus,
-    competitors: competitorsForRace(active, bulls, currentSnapshot),
+    competitors: competitorsForRace(active, bulls, currentSnapshot, now),
     countdownMs: displayStatus === "live" ? Math.max(0, end - now.getTime()) : Math.max(0, start - now.getTime()),
     elapsedMs,
     totalRaceMs: RACE_DURATION_MS,
