@@ -3,6 +3,7 @@ import type { Bull, Race, Season } from "@/types/domain";
 
 import { queueDistribution, markReadyDistributions, recalculateSeasonTreasury } from "../distributions/distribution-service";
 import { getMarketCapSnapshot, getWinnerFromSnapshots } from "../market/market-cap-service";
+import { attachPayoutPlanToDistribution, executeReadyDistributions } from "../payouts/payout-service";
 import { getRepository } from "../repositories/repository";
 import type { BullrunRepository } from "../repositories/types";
 import { applyCompletedRaceToStandings } from "../standings/standings-service";
@@ -68,6 +69,10 @@ async function completeRace(repo: BullrunRepository, race: Race, bulls: Bull[], 
   await repo.upsertRace(next);
   await applyCompletedRaceToStandings(repo, next);
   await queueDistribution(repo, next, completedAt);
+  const distribution = await repo.getDistribution(`distribution-${race.id}`);
+  if (distribution && !distribution.payoutPlan) {
+    await repo.upsertDistribution(await attachPayoutPlanToDistribution(repo, next, distribution));
+  }
   await repo.appendLog("info", "Race completed", { raceId: race.id, raceNumber: race.raceNumber, winner });
   return next;
 }
@@ -95,6 +100,7 @@ export async function runRaceEngineTick(options: { now?: Date; repo?: BullrunRep
 
   if (season.paused || season.seasonComplete) {
     await markReadyDistributions(repo, now);
+    await executeReadyDistributions(repo);
     await syncSeason(repo, season, await repo.getRaces(), now);
     return;
   }
@@ -131,6 +137,7 @@ export async function runRaceEngineTick(options: { now?: Date; repo?: BullrunRep
   }
 
   await markReadyDistributions(repo, now);
+  await executeReadyDistributions(repo);
   await syncSeason(repo, await repo.getSeason(), await repo.getRaces(), now);
 
   if (options.source === "worker") {
@@ -156,6 +163,7 @@ export async function forceCompleteNextRace(repo = getRepository(), now = new Da
 
   await completeRace(repo, target, bullsForRace(target, bulls), now);
   await markReadyDistributions(repo, now);
+  await executeReadyDistributions(repo);
   await syncSeason(repo, await repo.getSeason(), await repo.getRaces(), now);
   await repo.appendLog("warn", "Race manually advanced", { raceId: target.id, raceNumber: target.raceNumber });
 }

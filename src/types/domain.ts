@@ -54,6 +54,26 @@ export interface Distribution {
   readyAt: string;
   createdAt: string;
   completedAt: string | null;
+  payoutPlan: PayoutPlan | null;
+  txSignatures: string[];
+  failedReason: string | null;
+}
+
+export interface PayoutRecipient {
+  wallet: string;
+  amountSol: number;
+  tokenAmount: number;
+}
+
+export interface PayoutPlan {
+  generatedAt: string;
+  winningBullMint: string;
+  bullrunMint: string;
+  minBullrunHolding: number;
+  winningBullRecipients: PayoutRecipient[];
+  bullrunRecipients: PayoutRecipient[];
+  championshipTransfer: PayoutRecipient | null;
+  excludedWallets: string[];
 }
 
 export interface Season {

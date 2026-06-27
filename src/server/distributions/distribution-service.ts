@@ -22,6 +22,9 @@ export function createDistributionForRace(race: Race, now = new Date()): Distrib
     readyAt: new Date(now.getTime() + 5 * 60 * 1000).toISOString(),
     createdAt: now.toISOString(),
     completedAt: null,
+    payoutPlan: null,
+    txSignatures: [],
+    failedReason: null,
   };
 }
 
@@ -69,6 +72,7 @@ export async function markDistributionComplete(repo: BullrunRepository, distribu
     ...distribution,
     txStatus: "complete",
     completedAt,
+    failedReason: null,
   });
 
   if (race) {

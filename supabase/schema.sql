@@ -51,7 +51,10 @@ create table if not exists public.distributions (
   tx_status text not null default 'queued' check (tx_status in ('queued', 'ready', 'complete', 'failed')),
   ready_at timestamptz not null,
   created_at timestamptz not null default now(),
-  completed_at timestamptz
+  completed_at timestamptz,
+  payout_plan jsonb,
+  tx_signatures jsonb not null default '[]'::jsonb,
+  failed_reason text
 );
 
 create table if not exists public.seasons (

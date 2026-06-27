@@ -48,6 +48,9 @@ type DistributionRow = {
   ready_at: string;
   created_at: string;
   completed_at: string | null;
+  payout_plan: Distribution["payoutPlan"];
+  tx_signatures: string[] | null;
+  failed_reason: string | null;
 };
 
 type SeasonRow = {
@@ -157,6 +160,9 @@ function toDistribution(row: DistributionRow): Distribution {
     readyAt: row.ready_at,
     createdAt: row.created_at,
     completedAt: row.completed_at,
+    payoutPlan: row.payout_plan,
+    txSignatures: row.tx_signatures ?? [],
+    failedReason: row.failed_reason,
   };
 }
 
@@ -172,6 +178,9 @@ function fromDistribution(distribution: Distribution): DistributionRow {
     ready_at: distribution.readyAt,
     created_at: distribution.createdAt,
     completed_at: distribution.completedAt,
+    payout_plan: distribution.payoutPlan,
+    tx_signatures: distribution.txSignatures,
+    failed_reason: distribution.failedReason,
   };
 }
 

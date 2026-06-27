@@ -434,7 +434,10 @@ function DistributionQueue({
                 <th className="px-4 py-3">BULLRUN Holders</th>
                 <th className="px-4 py-3">Vault</th>
                 <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Recipients</th>
+                <th className="px-4 py-3">Txs</th>
                 <th className="px-4 py-3">Ready</th>
+                <th className="px-4 py-3">Error</th>
                 <th className="px-4 py-3">Action</th>
               </tr>
             </thead>
@@ -447,7 +450,16 @@ function DistributionQueue({
                   <td className="px-4 py-3">{distribution.holderAmount.toFixed(4)} SOL</td>
                   <td className="px-4 py-3">{distribution.championshipAmount.toFixed(4)} SOL</td>
                   <td className="px-4 py-3">{distribution.txStatus}</td>
+                  <td className="px-4 py-3">
+                    {distribution.payoutPlan
+                      ? `${distribution.payoutPlan.winningBullRecipients.length} / ${distribution.payoutPlan.bullrunRecipients.length}`
+                      : "pending"}
+                  </td>
+                  <td className="px-4 py-3">{distribution.txSignatures.length}</td>
                   <td className="px-4 py-3">{formatDateTime(distribution.readyAt)}</td>
+                  <td className="max-w-72 truncate px-4 py-3 text-[#f3b0b5]" title={distribution.failedReason ?? undefined}>
+                    {distribution.failedReason ?? "-"}
+                  </td>
                   <td className="px-4 py-3">
                     <button
                       type="button"

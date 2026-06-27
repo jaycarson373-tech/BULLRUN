@@ -26,6 +26,8 @@ export const config = {
   bullrunHolderRewardPrivateKey: readEnv("BULLRUN_HOLDER_REWARD_PRIVATE_KEY"),
   championshipVaultPrivateKey: readEnv("CHAMPIONSHIP_VAULT_PRIVATE_KEY"),
   solanaRpcUrl: readEnv("SOLANA_RPC_URL"),
+  payoutExecutionEnabled: (readEnv("PAYOUT_EXECUTION_ENABLED") ?? "false") === "true",
+  payoutBatchSize: Number(readEnv("PAYOUT_BATCH_SIZE") ?? 8),
   minPayoutSol: Number(readEnv("MIN_PAYOUT_SOL") ?? 0.001),
   excludedHolderWallets: readEnv("EXCLUDED_HOLDER_WALLETS"),
   raceDurationMinutes: Number(readEnv("RACE_DURATION_MINUTES") ?? 90),
