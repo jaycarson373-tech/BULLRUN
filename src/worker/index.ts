@@ -8,15 +8,19 @@ async function runOnce(source = "worker") {
   console.log(`[bullrun] race engine tick complete at ${new Date().toISOString()}`);
 }
 
+async function runDaemonTick() {
+  await runOnce().catch((error) => {
+    console.error("[bullrun] worker tick failed", error);
+  });
+}
+
 async function main() {
   if (config.workerMode === "daemon") {
     console.log(`[bullrun] worker daemon started with ${config.workerPollMs}ms polling`);
-    await runOnce();
+    await runDaemonTick();
 
     const timer = setInterval(() => {
-      runOnce().catch((error) => {
-        console.error("[bullrun] worker tick failed", error);
-      });
+      void runDaemonTick();
     }, config.workerPollMs);
 
     process.on("SIGTERM", () => {
