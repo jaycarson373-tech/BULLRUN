@@ -1,0 +1,15 @@
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package.json package-lock.json ./
+RUN npm ci --include=dev --ignore-scripts
+
+COPY tsconfig.json ./
+COPY src ./src
+
+ENV NODE_ENV=production
+
+CMD ["npm", "run", "worker"]
