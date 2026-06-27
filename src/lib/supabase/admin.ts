@@ -1,8 +1,11 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { WebSocketLikeConstructor } from "@supabase/realtime-js";
+import WebSocket from "ws";
 
 import { config, isSupabaseConfigured } from "@/lib/config";
 
 let client: SupabaseClient | null = null;
+const WebSocketTransport = WebSocket as unknown as WebSocketLikeConstructor;
 
 export function getSupabaseAdmin(): SupabaseClient {
   if (!isSupabaseConfigured()) {
@@ -14,6 +17,9 @@ export function getSupabaseAdmin(): SupabaseClient {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
+      },
+      realtime: {
+        transport: WebSocketTransport,
       },
     });
   }
