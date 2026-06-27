@@ -367,7 +367,7 @@ function HowItWorks() {
   const steps = [
     ["Hold 100K+ BULLRUN", "Minimum holder eligibility for season distributions."],
     ["4 bulls enter the arena", "Every 90 minutes, one scheduled race goes live."],
-    ["Highest market cap wins", "Race result is based on ending market cap among the 4 bulls."],
+    ["Highest ending market cap wins", "The bull with the largest market cap when the 90-minute race ends wins."],
     ["Fees split after races", "50% winning bull holders, 25% BULLRUN holders, 25% Championship Vault."],
   ] as const;
 
@@ -673,7 +673,7 @@ function RaceRules() {
     <section className="border-y border-[#241013] bg-[#090909]">
       <div className="mx-auto grid max-w-7xl gap-3 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-8">
         <Metric label="Race Length" value="90 minutes" />
-        <Metric label="Winner" value="Highest market cap" />
+        <Metric label="Winner" value="Ending market cap" />
         <Metric label="Eligibility" value="100K+ BULLRUN" />
       </div>
     </section>
