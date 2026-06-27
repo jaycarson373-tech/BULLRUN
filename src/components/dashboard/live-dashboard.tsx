@@ -781,7 +781,13 @@ function FooterCta() {
 }
 
 function FooterLinks() {
-  if (bullrunLinks.length === 0) {
+  const copyCa = () => {
+    if (bullrunCa) {
+      navigator.clipboard.writeText(bullrunCa).catch(() => undefined);
+    }
+  };
+
+  if (bullrunLinks.length === 0 && !bullrunCa) {
     return null;
   }
 
@@ -789,13 +795,27 @@ function FooterLinks() {
     <footer id="links" className="relative scroll-mt-20 overflow-hidden border-t border-[#241013] bg-black">
       <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.68),rgba(5,5,5,0.58),rgba(5,5,5,0.78))]" />
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <div className="flex items-center gap-3">
-          <img src="/images/bullrun-logo.jpg" alt="" className="h-10 w-10 rounded-full border border-[#5b171d] object-cover" />
-          <div>
-            <p className="text-sm font-semibold text-[#f7f7f2]">BULLRUN</p>
-            <p className="mt-1 text-sm text-[#a8a29a]">Season One market cap league</p>
+      <div className="relative mx-auto grid max-w-7xl gap-4 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <img src="/images/bullrun-logo.jpg" alt="" className="h-10 w-10 rounded-full border border-[#5b171d] object-cover" />
+            <div>
+              <p className="text-sm font-semibold text-[#f7f7f2]">BULLRUN</p>
+              <p className="mt-1 text-sm text-[#a8a29a]">Season One market cap league</p>
+            </div>
           </div>
+          {bullrunCa ? (
+            <button
+              type="button"
+              onClick={copyCa}
+              className="inline-flex min-w-0 max-w-full items-center gap-2 border border-[#4a171b] bg-black/78 px-3 py-2 text-left text-xs font-semibold text-[#f7f7f2] transition hover:border-[#df101c]"
+              title="Copy contract address"
+            >
+              <span className="shrink-0 text-[#df101c]">CA</span>
+              <span className="min-w-0 truncate font-mono">{bullrunCa}</span>
+              <Copy className="h-3.5 w-3.5 shrink-0 text-[#df101c]" aria-hidden="true" />
+            </button>
+          ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
           {bullrunLinks.map((link) => (

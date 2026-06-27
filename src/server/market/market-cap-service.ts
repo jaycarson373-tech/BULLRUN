@@ -30,6 +30,23 @@ type HeliusAssetPayload = {
   };
 };
 
+type DexScreenerPair = {
+  chainId?: string;
+  baseToken?: {
+    address?: string;
+  };
+  priceUsd?: number | string;
+  fdv?: number | string;
+  marketCap?: number | string;
+  liquidity?: {
+    usd?: number | string;
+  };
+};
+
+type DexScreenerPayload = {
+  pairs?: DexScreenerPair[] | null;
+};
+
 function toFiniteNumber(value: unknown): number | null {
   if (typeof value === "number") {
     return Number.isFinite(value) ? value : null;
@@ -155,6 +172,56 @@ async function fetchHeliusMarketCaps(bulls: Bull[]): Promise<Record<string, numb
   return Object.keys(result).length > 0 ? result : null;
 }
 
+function extractDexScreenerMarketCap(pair: DexScreenerPair): number | null {
+  const explicitMarketCap = toFiniteNumber(pair.marketCap ?? pair.fdv);
+  if (explicitMarketCap !== null && explicitMarketCap > 0) {
+    return explicitMarketCap;
+  }
+
+  return marketCapFromPrice(pair.priceUsd);
+}
+
+async function fetchDexScreenerMarketCaps(bulls: Bull[]): Promise<Record<string, number> | null> {
+  if (bulls.length === 0) {
+    return null;
+  }
+
+  const mintToBullId = new Map(bulls.map((bull) => [bull.tokenMint, bull.id]));
+  const url = `https://api.dexscreener.com/latest/dex/tokens/${bulls.map((bull) => bull.tokenMint).join(",")}`;
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Dexscreener market cap lookup failed with ${response.status}`);
+  }
+
+  const payload = (await response.json()) as DexScreenerPayload;
+  const bestByBull = new Map<string, { marketCap: number; liquidityUsd: number }>();
+
+  for (const pair of payload.pairs ?? []) {
+    if (pair.chainId !== "solana" || !pair.baseToken?.address) {
+      continue;
+    }
+
+    const bullId = mintToBullId.get(pair.baseToken.address);
+    const marketCap = extractDexScreenerMarketCap(pair);
+    if (!bullId || marketCap === null) {
+      continue;
+    }
+
+    const liquidityUsd = toFiniteNumber(pair.liquidity?.usd) ?? 0;
+    const currentBest = bestByBull.get(bullId);
+    if (!currentBest || liquidityUsd >= currentBest.liquidityUsd) {
+      bestByBull.set(bullId, { marketCap, liquidityUsd });
+    }
+  }
+
+  const result = Object.fromEntries(
+    [...bestByBull.entries()].map(([bullId, value]) => [bullId, round(value.marketCap, 2)]),
+  );
+
+  return Object.keys(result).length > 0 ? result : null;
+}
+
 function extractProviderMarketCap(value: ProviderMarketValue | undefined): number | null {
   if (typeof value === "number") {
     return Number.isFinite(value) ? value : null;
@@ -210,11 +277,12 @@ export async function getMarketCapSnapshot(
   race?: Race,
   at = new Date(),
 ): Promise<RaceSnapshot> {
-  const [heliusCaps, providerCaps] = await Promise.all([
+  const [heliusCaps, dexScreenerCaps, providerCaps] = await Promise.all([
     fetchHeliusMarketCaps(bulls).catch(() => null),
+    fetchDexScreenerMarketCaps(bulls).catch(() => null),
     fetchProviderMarketCaps(bulls).catch(() => null),
   ]);
-  const marketCaps = { ...(heliusCaps ?? {}), ...(providerCaps ?? {}) };
+  const marketCaps = { ...(heliusCaps ?? {}), ...(dexScreenerCaps ?? {}), ...(providerCaps ?? {}) };
   const snapshot: RaceSnapshot = {};
 
   for (const bull of bulls) {
