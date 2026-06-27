@@ -65,6 +65,11 @@ export async function getCurrentRaceView(repo = getRepository()): Promise<Curren
   const races = await repo.getRaces();
   const active =
     races.find((race) => race.status === "live") ??
+    races.find((race) => {
+      const start = new Date(race.startTime);
+      const end = new Date(race.endTime);
+      return race.status === "scheduled" && start <= now && end > now;
+    }) ??
     races.find((race) => race.status === "scheduled" && new Date(race.startTime) > now) ??
     races.at(-1) ??
     null;
