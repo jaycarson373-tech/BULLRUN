@@ -60,6 +60,13 @@ function requireVault(value: string | undefined, name: string): string {
   return value;
 }
 
+function claimWalletPrivateKey(): string {
+  return requireVault(
+    config.claimWalletPrivateKey ?? config.payoutSignerPrivateKey,
+    "CLAIM_WALLET_PRIVATE_KEY or PAYOUT_SIGNER_PRIVATE_KEY",
+  );
+}
+
 export async function buildPayoutPlan(options: {
   distribution: Distribution;
   winningBull: Bull;
@@ -144,6 +151,26 @@ export async function executeDistributionPayout(repo: BullrunRepository, distrib
   }
 
   const signatures: string[] = [];
+  if (config.payoutSplitFromClaimWallet) {
+    const splitResult = await transferSolToRecipients({
+      privateKey: claimWalletPrivateKey(),
+      recipients: [
+        {
+          wallet: requireVault(config.winningBullRewardVault, "WINNING_BULL_REWARD_VAULT"),
+          amountSol: distribution.winnerAmount,
+          tokenAmount: 0,
+        },
+        {
+          wallet: requireVault(config.bullrunHolderRewardVault, "BULLRUN_HOLDER_REWARD_VAULT"),
+          amountSol: distribution.holderAmount,
+          tokenAmount: 0,
+        },
+        championshipTransfer,
+      ],
+    });
+    signatures.push(...splitResult.signatures);
+  }
+
   const winningResult = await transferSolToRecipients({
     privateKey: requireVault(config.winningBullRewardPrivateKey, "WINNING_BULL_REWARD_PRIVATE_KEY"),
     expectedPublicKey: requireVault(config.winningBullRewardVault, "WINNING_BULL_REWARD_VAULT"),
@@ -157,13 +184,6 @@ export async function executeDistributionPayout(repo: BullrunRepository, distrib
     recipients: plan.bullrunRecipients,
   });
   signatures.push(...bullrunResult.signatures);
-
-  const championshipResult = await transferSolToRecipients({
-    privateKey: requireVault(config.championshipVaultPrivateKey, "CHAMPIONSHIP_VAULT_PRIVATE_KEY"),
-    expectedPublicKey: requireVault(config.championshipVaultWallet, "CHAMPIONSHIP_VAULT_WALLET"),
-    recipients: [championshipTransfer],
-  });
-  signatures.push(...championshipResult.signatures);
 
   const completedAt = new Date().toISOString();
   await repo.upsertDistribution({

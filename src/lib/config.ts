@@ -27,6 +27,7 @@ export const config = {
   championshipVaultPrivateKey: readEnv("CHAMPIONSHIP_VAULT_PRIVATE_KEY"),
   solanaRpcUrl: readEnv("SOLANA_RPC_URL"),
   payoutExecutionEnabled: (readEnv("PAYOUT_EXECUTION_ENABLED") ?? "false") === "true",
+  payoutSplitFromClaimWallet: (readEnv("PAYOUT_SPLIT_FROM_CLAIM_WALLET") ?? "false") === "true",
   payoutBatchSize: Number(readEnv("PAYOUT_BATCH_SIZE") ?? 8),
   minPayoutSol: Number(readEnv("MIN_PAYOUT_SOL") ?? 0.001),
   excludedHolderWallets: readEnv("EXCLUDED_HOLDER_WALLETS"),
