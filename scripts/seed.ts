@@ -35,7 +35,10 @@ async function main() {
   }
 
   const existingBulls = new Set((await repo.getBulls().catch(() => [])).map((bull) => bull.id));
-  const existingRaces = new Set((await repo.getRaces().catch(() => [])).map((race) => race.id));
+  const existingRaceRows = await repo.getRaces().catch(() => []);
+  const existingRaces = new Set(existingRaceRows.map((race) => race.id));
+  const canRescheduleExistingRaces =
+    !reset && existingRaceRows.length > 0 && existingRaceRows.every((race) => race.status !== "completed");
   const seasonStart = getSeasonStart();
 
   for (const bull of seedBulls) {
@@ -59,6 +62,21 @@ async function main() {
   for (const race of races) {
     if (reset || !existingRaces.has(race.id)) {
       await repo.upsertRace(race);
+    } else if (canRescheduleExistingRaces) {
+      const current = await repo.getRace(race.id);
+      if (current) {
+        await repo.upsertRace({
+          ...current,
+          startTime: race.startTime,
+          endTime: race.endTime,
+          snapshotStart: null,
+          snapshotEnd: null,
+          liveMarketCaps: null,
+          winner: null,
+          status: "scheduled",
+          distributionComplete: false,
+        });
+      }
     }
   }
 
@@ -73,6 +91,7 @@ async function main() {
 
   await repo.appendLog("info", "Seed completed", {
     reset,
+    rescheduled: canRescheduleExistingRaces,
     seasonStart: seasonStart.toISOString(),
     bulls: seedBulls.length,
     races: races.length,

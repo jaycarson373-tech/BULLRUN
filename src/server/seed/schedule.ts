@@ -1,4 +1,5 @@
 import { config } from "@/lib/config";
+import { LAUNCH_SEASON_START_ISO } from "@/lib/constants";
 import { RACE_DURATION_MS } from "@/lib/time";
 import type { Bull, Race, Season } from "@/types/domain";
 
@@ -6,12 +7,12 @@ const TOTAL_REGULAR_SEASON_RACES = 82;
 const LAUNCH_CURRENT_RACE = 1;
 const UNIQUE_RACE_STRIDES = [5, 7, 9] as const;
 
-export function getSeasonStart(now = new Date()): Date {
+export function getSeasonStart(): Date {
   if (config.seasonStartIso) {
     return new Date(config.seasonStartIso);
   }
 
-  return new Date(now.getTime() + 60 * 60 * 1000);
+  return new Date(LAUNCH_SEASON_START_ISO);
 }
 
 export function generateSeasonSchedule(bulls: Bull[], seasonStart = getSeasonStart()): Race[] {
