@@ -53,12 +53,9 @@ export async function applyCompletedRaceToStandings(repo: BullrunRepository, rac
     if (left === race.winner) return -1;
     if (right === race.winner) return 1;
 
-    const leftGain = percentChange(race.snapshotStart?.[left]?.marketCap ?? 0, race.snapshotEnd?.[left]?.marketCap ?? 0);
-    const rightGain = percentChange(
-      race.snapshotStart?.[right]?.marketCap ?? 0,
-      race.snapshotEnd?.[right]?.marketCap ?? 0,
-    );
-    return rightGain - leftGain;
+    const leftMarketCap = race.snapshotEnd?.[left]?.marketCap ?? 0;
+    const rightMarketCap = race.snapshotEnd?.[right]?.marketCap ?? 0;
+    return rightMarketCap - leftMarketCap;
   });
 
   for (const bull of bulls) {

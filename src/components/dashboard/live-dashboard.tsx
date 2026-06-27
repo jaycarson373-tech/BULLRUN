@@ -214,7 +214,8 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
                     <p className="text-xs text-[#df101c]">${competitor.bull.ticker}</p>
                   </div>
                 </div>
-                <p className="mt-3 text-lg font-black">{signedPercent(competitor.percentChange)}</p>
+                <p className="mt-3 text-lg font-black">{formatMarketCap(competitor.currentMarketCap)}</p>
+                <p className="text-xs text-[#a8a29a]">{signedPercent(competitor.percentChange)}</p>
               </div>
             ))}
           </div>
@@ -287,7 +288,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
-  const sorted = [...currentRace.competitors].sort((a, b) => b.percentChange - a.percentChange);
+  const sorted = [...currentRace.competitors].sort((a, b) => b.currentMarketCap - a.currentMarketCap);
   const leader = sorted[0];
 
   return (
@@ -300,7 +301,7 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
             <p className="text-sm font-semibold text-[#df101c]">Live Race Preview</p>
             <h2 className="text-3xl font-black text-[#f7f7f2]">Four-Bull Market Cap Sprint</h2>
           </div>
-          <div className="text-sm text-[#c8c8c4]">Winner = highest % market cap gain</div>
+          <div className="text-sm text-[#c8c8c4]">Winner = highest market cap at race end</div>
         </div>
         <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -349,7 +350,7 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
                   >
                     <BullAvatar bull={competitor.bull} size="sm" />
                     <div className="hidden border border-[#421519] bg-black px-2 py-1 text-xs font-semibold text-[#f7f7f2] sm:block">
-                      {competitor.bull.ticker} {signedPercent(competitor.percentChange)}
+                      {competitor.bull.ticker} {formatMarketCap(competitor.currentMarketCap)}
                     </div>
                   </div>
                 </div>
@@ -366,7 +367,7 @@ function HowItWorks() {
   const steps = [
     ["Hold 100K+ BULLRUN", "Minimum holder eligibility for season distributions."],
     ["4 bulls enter the arena", "Every 90 minutes, one scheduled race goes live."],
-    ["Highest % gain wins", "Race result is based on percentage market cap increase."],
+    ["Highest market cap wins", "Race result is based on ending market cap among the 4 bulls."],
     ["Fees split after races", "50% winning bull holders, 25% BULLRUN holders, 25% Championship Vault."],
   ] as const;
 
@@ -672,7 +673,7 @@ function RaceRules() {
     <section className="border-y border-[#241013] bg-[#090909]">
       <div className="mx-auto grid max-w-7xl gap-3 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-8">
         <Metric label="Race Length" value="90 minutes" />
-        <Metric label="Winner" value="Highest % gain" />
+        <Metric label="Winner" value="Highest market cap" />
         <Metric label="Eligibility" value="100K+ BULLRUN" />
       </div>
     </section>

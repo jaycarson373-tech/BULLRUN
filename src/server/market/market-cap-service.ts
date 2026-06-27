@@ -241,17 +241,17 @@ export function addPercentChanges(start: RaceSnapshot | null, current: RaceSnaps
   return next;
 }
 
-export function getWinnerFromSnapshots(start: RaceSnapshot, end: RaceSnapshot): string | null {
+export function getWinnerFromSnapshots(_start: RaceSnapshot, end: RaceSnapshot): string | null {
   let winner: string | null = null;
-  let bestGain = Number.NEGATIVE_INFINITY;
+  let highestMarketCap = Number.NEGATIVE_INFINITY;
 
   for (const bullId of Object.keys(end)) {
-    const gain = percentChange(start[bullId]?.marketCap ?? 0, end[bullId].marketCap);
-    if (gain > bestGain) {
-      bestGain = gain;
+    const marketCap = end[bullId].marketCap;
+    if (marketCap > highestMarketCap) {
+      highestMarketCap = marketCap;
       winner = bullId;
     }
   }
 
-  return winner;
+  return highestMarketCap > 0 ? winner : null;
 }

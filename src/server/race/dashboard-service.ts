@@ -31,10 +31,10 @@ async function maybeAutoTick(repo: BullrunRepository): Promise<void> {
 function competitorsForRace(race: Race, bulls: Bull[], currentSnapshot = race.liveMarketCaps): RaceCompetitorView[] {
   const byId = mapBulls(bulls);
   const snapshotWithChanges = currentSnapshot ? addPercentChanges(race.snapshotStart, currentSnapshot) : null;
-  const gains = race.bullIds.map((id) => snapshotWithChanges?.[id]?.percentChange ?? 0);
-  const minGain = Math.min(...gains, 0);
-  const maxGain = Math.max(...gains, 1);
-  const spread = Math.max(1, maxGain - minGain);
+  const marketCaps = race.bullIds.map((id) => snapshotWithChanges?.[id]?.marketCap ?? 0);
+  const minMarketCap = Math.min(...marketCaps, 0);
+  const maxMarketCap = Math.max(...marketCaps, 1);
+  const spread = Math.max(1, maxMarketCap - minMarketCap);
 
   return race.bullIds.map((id) => {
     const bull = byId.get(id);
@@ -44,12 +44,13 @@ function competitorsForRace(race: Race, bulls: Bull[], currentSnapshot = race.li
 
     const current = snapshotWithChanges?.[id];
     const percent = current?.percentChange ?? 0;
-    const normalized = clamp(((percent - minGain) / spread) * 76 + 12, 6, 94);
+    const currentMarketCap = current?.marketCap ?? 0;
+    const normalized = clamp(((currentMarketCap - minMarketCap) / spread) * 76 + 12, 6, 94);
 
     return {
       bull,
       startMarketCap: race.snapshotStart?.[id]?.marketCap ?? null,
-      currentMarketCap: current?.marketCap ?? 0,
+      currentMarketCap,
       percentChange: percent,
       position: normalized,
     };
