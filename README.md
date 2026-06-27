@@ -41,3 +41,11 @@ Copy `.env.example` to `.env.local` for the Vercel app and to Railway variables 
 For the fixed-supply BULLRUN setup, set `TOKEN_FIXED_SUPPLY=1000000000`. With every bull token fixed at 1B supply, displayed market cap is `live price * 1B`, and race ranking is equivalent to highest percentage price gain. `HELIUS_API_KEY` enables CA-based price lookup through Helius `getAsset` when Helius returns `token_info.price_info`; `MARKET_CAP_API_URL` can still override this with direct market caps or prices.
 
 Set `NEXT_PUBLIC_BULLRUN_CA` and `NEXT_PUBLIC_BULLRUN_X_URL` to show the header CA copy button and X link. Footer buttons appear when `NEXT_PUBLIC_PUMP_FUN_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_BUY_BULLRUN_URL`, or `NEXT_PUBLIC_COINGECKO_URL` are set.
+
+After changing launch bulls or resetting production data, run:
+
+```bash
+npm run seed -- --reset
+```
+
+With Supabase env vars set, this clears prior season rows and seeds the 16 launch bulls, a clean 82-race schedule, zero standings, zero vault totals, and no previous winners.

@@ -1,22 +1,22 @@
 import type { Bull } from "@/types/domain";
 
 const names = [
-  ["ansem", "Ansem", "ANSM"],
+  ["cented", "Cented", "CENT"],
+  ["gake", "Gake", "GAKE"],
+  ["traderpow", "Traderpow", "TPOW"],
+  ["jack-duval", "Jack Duval", "JACK"],
+  ["scharo", "Scharo", "SCHAR"],
+  ["yenni", "Yenni", "YENNI"],
+  ["alxcooks", "Alxcooks", "ALX"],
+  ["alon", "Alon", "ALON"],
+  ["beanz", "Beanz", "BEANZ"],
+  ["daumen", "Daumen", "DAUM"],
+  ["cupsey", "Cupsey", "CUP"],
+  ["orangie", "Orangie", "ORNG"],
+  ["the-black-bull", "The Black Bull", "BLACK"],
   ["murad", "Murad", "MURAD"],
-  ["hsaka", "Hsaka", "HSAKA"],
-  ["rookie", "Rookie", "ROOKIE"],
-  ["cobie", "Cobie", "COBIE"],
-  ["pentoshi", "Pentoshi", "PENT"],
-  ["gcr", "GCR", "GCR"],
-  ["loomdart", "Loomdart", "LOOM"],
-  ["cl", "CL", "CL"],
-  ["bluntz", "Bluntz", "BLNTZ"],
-  ["sherpa", "Sherpa", "SHRP"],
-  ["rager", "Rager", "RAGER"],
-  ["mayne", "Mayne", "MAYNE"],
-  ["salsa", "Salsa", "SALSA"],
-  ["ledger", "Ledger", "LEDGR"],
-  ["vector", "Vector", "VCTR"],
+  ["shaams", "Shaams", "SHAMS"],
+  ["ethan-prosper", "Ethan Prosper", "ETHAN"],
 ] as const;
 
 export const seedBulls: Bull[] = names.map(([id, name, ticker], index) => ({

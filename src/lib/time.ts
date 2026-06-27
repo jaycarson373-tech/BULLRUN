@@ -1,4 +1,4 @@
-export const RACE_DURATION_MS = 90 * 60 * 1000;
+export const RACE_DURATION_MS = Number(process.env.RACE_DURATION_MINUTES ?? 90) * 60 * 1000;
 
 export function nowIso(): string {
   return new Date().toISOString();

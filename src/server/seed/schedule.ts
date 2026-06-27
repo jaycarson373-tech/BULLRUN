@@ -3,7 +3,7 @@ import { RACE_DURATION_MS } from "@/lib/time";
 import type { Bull, Race, Season } from "@/types/domain";
 
 const TOTAL_REGULAR_SEASON_RACES = 82;
-const DEMO_CURRENT_RACE = 12;
+const LAUNCH_CURRENT_RACE = 1;
 const UNIQUE_RACE_STRIDES = [5, 7, 9] as const;
 
 export function getSeasonStart(now = new Date()): Date {
@@ -11,7 +11,7 @@ export function getSeasonStart(now = new Date()): Date {
     return new Date(config.seasonStartIso);
   }
 
-  return new Date(now.getTime() - (DEMO_CURRENT_RACE - 1) * RACE_DURATION_MS - 22 * 60 * 1000);
+  return new Date(now.getTime() + 60 * 60 * 1000);
 }
 
 export function generateSeasonSchedule(bulls: Bull[], seasonStart = getSeasonStart()): Race[] {
@@ -50,8 +50,8 @@ export function generateSeasonSchedule(bulls: Bull[], seasonStart = getSeasonSta
 export function createInitialSeason(now = new Date()): Season {
   return {
     id: "season-1",
-    currentRace: DEMO_CURRENT_RACE,
-    currentWeek: Math.ceil(DEMO_CURRENT_RACE / 4),
+    currentRace: LAUNCH_CURRENT_RACE,
+    currentWeek: Math.ceil(LAUNCH_CURRENT_RACE / 4),
     playoffsStarted: false,
     finalsStarted: false,
     seasonComplete: false,

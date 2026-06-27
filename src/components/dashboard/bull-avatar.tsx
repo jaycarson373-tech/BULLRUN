@@ -22,7 +22,7 @@ export function BullAvatar({ bull, size = "md" }: { bull: Bull; size?: "sm" | "m
       <img
         src={bull.image}
         alt=""
-        className={`${classes} shrink-0 rounded border border-[#3a3221] object-cover`}
+        className={`${classes} shrink-0 rounded border border-[#5b171d] object-cover`}
       />
     );
   }
@@ -30,7 +30,7 @@ export function BullAvatar({ bull, size = "md" }: { bull: Bull; size?: "sm" | "m
   return (
     <div
       aria-hidden="true"
-      className={`${classes} grid shrink-0 place-items-center rounded border border-[#3a3221] bg-[radial-gradient(circle_at_35%_25%,#4a3217,#17110b_52%,#070707)] font-bold text-[#f1d189]`}
+      className={`${classes} grid shrink-0 place-items-center rounded border border-[#5b171d] bg-[radial-gradient(circle_at_35%_25%,#5c1018,#171010_52%,#070707)] font-bold text-[#f7f7f2] shadow-[0_0_24px_rgba(223,16,28,0.16)]`}
     >
       {initials(bull.name)}
     </div>
