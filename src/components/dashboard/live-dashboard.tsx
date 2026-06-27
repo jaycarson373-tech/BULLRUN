@@ -292,8 +292,8 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
 
   return (
     <section id="live-race" className="relative scroll-mt-20 overflow-hidden border-b border-[#241013] bg-[#070707]">
-      <img src="/images/bullrun-arena-live.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.28]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_38%,rgba(223,16,28,0.16),transparent_34%),linear-gradient(180deg,#050505_0%,rgba(5,5,5,0.68)_42%,#050505_100%)]" />
+      <img src="/images/backgrounds/main-event.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_38%,rgba(223,16,28,0.12),transparent_34%),linear-gradient(180deg,rgba(5,5,5,0.18)_0%,rgba(5,5,5,0.34)_42%,#050505_100%)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
@@ -309,8 +309,8 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
                 key={competitor.bull.id}
                 className={
                   index === 0
-                    ? "glow-card motion-card border border-[#df101c]/70 bg-[#16090b]/94 p-4 shadow-[0_0_34px_rgba(223,16,28,0.22)]"
-                    : "glow-card motion-card border border-[#301316] bg-[#101010]/92 p-4 shadow-[0_0_28px_rgba(0,0,0,0.35)]"
+                    ? "glow-card motion-card border border-[#df101c]/70 bg-[#070707]/96 p-4 shadow-[0_0_34px_rgba(223,16,28,0.22)]"
+                    : "glow-card motion-card border border-[#301316] bg-[#070707]/95 p-4 shadow-[0_0_28px_rgba(0,0,0,0.35)]"
                 }
               >
                 <div className="flex items-start justify-between gap-3">
@@ -340,7 +340,7 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
               </article>
             ))}
           </div>
-          <div className="motion-card min-h-[520px] border border-[#301316] bg-[#0a0a0a]/92 p-4 shadow-[0_0_50px_rgba(0,0,0,0.42)]">
+          <div className="motion-card min-h-[520px] border border-[#301316] bg-[#050505]/95 p-4 shadow-[0_0_50px_rgba(0,0,0,0.42)]">
             <div className="mb-4 flex items-center justify-between text-sm text-[#a8a29a]">
               <span>Start</span>
               <span className="inline-flex items-center gap-2 text-[#f7f7f2]">
@@ -382,8 +382,8 @@ function HowItWorks() {
 
   return (
     <section id="how-it-works" className="relative scroll-mt-20 overflow-hidden border-b border-[#241013] bg-[#050505]">
-      <img src="/images/bullrun-arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.3]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.7),#050505)]" />
+      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.58),rgba(5,5,5,0.28),rgba(5,5,5,0.58))]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#df101c]">How It Works</p>
@@ -391,7 +391,7 @@ function HowItWorks() {
         </div>
         <div className="grid gap-3 md:grid-cols-4">
           {steps.map(([title, body], index) => (
-            <article key={title} className="glow-card scroll-reveal border border-[#301316] bg-black/72 p-5 backdrop-blur-sm">
+            <article key={title} className="glow-card scroll-reveal border border-[#301316] bg-black/94 p-5 backdrop-blur-sm">
               <p className="mb-4 text-sm font-black text-[#df101c]">STEP {index + 1}</p>
               <h3 className="text-lg font-black text-[#f7f7f2]">{title}</h3>
               <p className="mt-3 text-sm leading-6 text-[#b9b9b4]">{body}</p>
@@ -406,8 +406,8 @@ function HowItWorks() {
 function BullsGrid({ standings }: { standings: Standing[] }) {
   return (
     <section className="relative overflow-hidden border-b border-[#241013] bg-[#070707]">
-      <img src="/images/bullrun-arena-smoke.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.2]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#070707,rgba(7,7,7,0.84),#050505)]" />
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,7,0.48),rgba(7,7,7,0.58),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center gap-3">
           <Users className="h-6 w-6 text-[#df101c]" aria-hidden="true" />
@@ -415,7 +415,7 @@ function BullsGrid({ standings }: { standings: Standing[] }) {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {standings.map((standing) => (
-            <article key={standing.id} className="glow-card scroll-reveal border border-[#301316] bg-[#101010]/92 p-4">
+            <article key={standing.id} className="glow-card scroll-reveal border border-[#301316] bg-[#070707]/95 p-4">
               <div className="flex flex-col gap-4">
                 <BullAvatar bull={standing} size="xl" />
                 <div className="min-w-0 border-t border-[#241013] pt-3">
@@ -448,8 +448,8 @@ function BullsGrid({ standings }: { standings: Standing[] }) {
 function Standings({ standings }: { standings: Standing[] }) {
   return (
     <section className="relative overflow-hidden bg-[#050505]">
-      <img src="/images/bullrun-arena-floor.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.16]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505,rgba(5,5,5,0.9),#050505)]" />
+      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.52),rgba(5,5,5,0.72),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div className="flex items-center gap-3">
@@ -461,7 +461,7 @@ function Standings({ standings }: { standings: Standing[] }) {
             <span className="border border-[#3a171b] bg-black/70 px-3 py-2 text-[#8f8a80]">Bottom 8</span>
           </div>
         </div>
-        <div className="overflow-x-auto border border-[#301316]">
+        <div className="overflow-x-auto border border-[#301316] bg-black/94">
           <table className="min-w-full border-collapse text-left text-sm">
             <thead className="bg-[#141111] text-[#a8a29a]">
               <tr>
@@ -524,15 +524,17 @@ function Standings({ standings }: { standings: Standing[] }) {
 
 function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number }) {
   return (
-    <section className="border-y border-[#241013] bg-[#090909]">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden border-y border-[#241013] bg-[#090909]">
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.58),rgba(5,5,5,0.68),#050505)]" />
+      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex items-center gap-3">
           <CalendarClock className="h-6 w-6 text-[#df101c]" aria-hidden="true" />
           <h2 className="text-2xl font-black">Upcoming Races</h2>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {upcoming.map((item) => (
-            <article key={item.race.id} className="border border-[#301316] bg-[#111111] p-4">
+            <article key={item.race.id} className="border border-[#301316] bg-[#070707]/95 p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-[#df101c]">Race {item.race.raceNumber}</p>
@@ -564,8 +566,8 @@ function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number
 function Treasury({ summary }: { summary: DistributionSummary }) {
   return (
     <section className="relative overflow-hidden border-y border-[#2b1014] bg-[#050505]">
-      <img src="/images/bullrun-arena-floor.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.34]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(223,16,28,0.22),transparent_34%),linear-gradient(180deg,#050505,rgba(5,5,5,0.68),#050505)]" />
+      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(223,16,28,0.18),transparent_34%),linear-gradient(180deg,rgba(5,5,5,0.42),rgba(5,5,5,0.58),#050505)]" />
       <div className="relative mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto mb-7 flex max-w-7xl flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
@@ -600,7 +602,7 @@ function Treasury({ summary }: { summary: DistributionSummary }) {
 
 function TreasuryTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="glow-card scroll-reveal border border-[#301316] bg-[#0b0b0b]/88 p-6 backdrop-blur-sm">
+    <div className="glow-card scroll-reveal border border-[#301316] bg-[#070707]/95 p-6 backdrop-blur-sm">
       <div className="mb-4 text-[#df101c]">{icon}</div>
       <p className="text-sm text-[#a8a29a]">{label}</p>
       <p className="mt-2 text-3xl font-black">{value}</p>
@@ -610,20 +612,22 @@ function TreasuryTile({ icon, label, value }: { icon: ReactNode; label: string; 
 
 function PreviousWinners({ history }: { history: RaceHistoryView[] }) {
   return (
-    <section className="border-t border-[#241013] bg-[#080808]">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden border-t border-[#241013] bg-[#080808]">
+      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.64),rgba(5,5,5,0.7),#050505)]" />
+      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex items-center gap-3">
           <Crown className="h-6 w-6 text-[#df101c]" aria-hidden="true" />
           <h2 className="text-2xl font-black">Previous Winners</h2>
         </div>
         {history.length === 0 ? (
-          <div className="border border-[#301316] bg-[#101010] p-6 text-sm text-[#b9b9b4]">
+          <div className="border border-[#301316] bg-[#070707]/95 p-6 text-sm text-[#b9b9b4]">
             No races completed yet. Season One begins soon.
           </div>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             {history.map((item) => (
-              <article key={item.race.id} className="border border-[#301316] bg-[#111111] p-4">
+              <article key={item.race.id} className="border border-[#301316] bg-[#070707]/95 p-4">
                 <p className="text-sm font-semibold text-[#df101c]">Race {item.race.raceNumber}</p>
                 {item.winner ? (
                   <div className="mt-3 flex items-center gap-3">
@@ -663,8 +667,8 @@ function FAQ() {
 
   return (
     <section className="relative overflow-hidden border-t border-[#241013] bg-[#050505]">
-      <img src="/images/bullrun-arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.2]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505,rgba(5,5,5,0.84),#050505)]" />
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.56),rgba(5,5,5,0.66),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#df101c]">FAQ</p>
@@ -672,7 +676,7 @@ function FAQ() {
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {items.map(([question, answer]) => (
-            <article key={question} className="glow-card scroll-reveal border border-[#301316] bg-black/72 p-5 backdrop-blur-sm">
+            <article key={question} className="glow-card scroll-reveal border border-[#301316] bg-black/94 p-5 backdrop-blur-sm">
               <h3 className="text-lg font-black text-[#f7f7f2]">{question}</h3>
               <p className="mt-3 text-sm leading-6 text-[#b9b9b4]">{answer}</p>
             </article>
@@ -686,8 +690,8 @@ function FAQ() {
 function FooterCta() {
   return (
     <section className="relative overflow-hidden border-t border-[#241013] bg-black">
-      <img src="/images/bullrun-arena-smoke.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.3]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.66),#050505)]" />
+      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.62),rgba(5,5,5,0.42),rgba(5,5,5,0.72))]" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-5 px-4 py-12 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
           <p className="text-sm font-semibold text-[#df101c]">The arena opens soon.</p>
@@ -725,8 +729,8 @@ function FooterLinks() {
 
   return (
     <footer id="links" className="relative scroll-mt-20 overflow-hidden border-t border-[#241013] bg-black">
-      <img src="/images/bullrun-arena-floor.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.12]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505,rgba(5,5,5,0.9),#050505)]" />
+      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.68),rgba(5,5,5,0.58),rgba(5,5,5,0.78))]" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div className="flex items-center gap-3">
           <img src="/images/bullrun-logo.jpg" alt="" className="h-10 w-10 rounded-full border border-[#5b171d] object-cover" />
@@ -756,8 +760,10 @@ function FooterLinks() {
 
 function RaceRules() {
   return (
-    <section className="border-y border-[#241013] bg-[#090909]">
-      <div className="mx-auto grid max-w-7xl gap-3 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-8">
+    <section className="relative overflow-hidden border-y border-[#241013] bg-[#090909]">
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.58),rgba(5,5,5,0.68),#050505)]" />
+      <div className="relative mx-auto grid max-w-7xl gap-3 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-8">
         <Metric label="Race Length" value="90 minutes" />
         <Metric label="Winner" value="Ending market cap" />
         <Metric label="Eligibility" value="100K+ BULLRUN" />
