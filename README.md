@@ -36,4 +36,6 @@ Use `WORKER_MODE=daemon` for 30-second market-cap refreshes, or `WORKER_MODE=cro
 
 ## Environment
 
-Copy `.env.example` to `.env.local` for the Vercel app and to Railway variables for the worker. The market-cap service uses deterministic mock caps unless `MARKET_CAP_API_URL` is configured.
+Copy `.env.example` to `.env.local` for the Vercel app and to Railway variables for the worker. The market-cap service uses deterministic mock caps unless Helius or `MARKET_CAP_API_URL` is configured.
+
+For the fixed-supply BULLRUN setup, set `TOKEN_FIXED_SUPPLY=1000000000`. With every bull token fixed at 1B supply, displayed market cap is `live price * 1B`, and race ranking is equivalent to highest percentage price gain. `HELIUS_API_KEY` enables CA-based price lookup through Helius `getAsset` when Helius returns `token_info.price_info`; `MARKET_CAP_API_URL` can still override this with direct market caps or prices.

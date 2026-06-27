@@ -16,6 +16,9 @@ export const config = {
   defaultCreatorFeeSol: Number(readEnv("DEFAULT_CREATOR_FEE_SOL") ?? 2),
   marketCapApiUrl: readEnv("MARKET_CAP_API_URL"),
   marketCapApiKey: readEnv("MARKET_CAP_API_KEY"),
+  heliusApiKey: readEnv("HELIUS_API_KEY"),
+  heliusRpcUrl: readEnv("HELIUS_RPC_URL"),
+  tokenFixedSupply: Number(readEnv("TOKEN_FIXED_SUPPLY") ?? 1_000_000_000),
 };
 
 export function isSupabaseConfigured(): boolean {
