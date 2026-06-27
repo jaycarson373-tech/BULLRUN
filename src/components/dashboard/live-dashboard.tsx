@@ -14,6 +14,7 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { formatClockDuration, formatDateTime } from "@/lib/time";
@@ -32,12 +33,13 @@ const currency = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
+const bullrunXUrl = process.env.NEXT_PUBLIC_BULLRUN_X_URL ?? "https://x.com/TheBullRunSol_";
 const bullrunCa = process.env.NEXT_PUBLIC_BULLRUN_CA;
 const buyUrl = process.env.NEXT_PUBLIC_BUY_BULLRUN_URL;
 const bullrunLinks = [
   { label: "Pump.fun", href: process.env.NEXT_PUBLIC_PUMP_FUN_URL },
   { label: "Dexscreener", href: process.env.NEXT_PUBLIC_DEXSCREENER_URL },
-  { label: "X", href: process.env.NEXT_PUBLIC_BULLRUN_X_URL },
+  { label: "X", href: bullrunXUrl },
   { label: "Buy $BULLRUN", href: buyUrl },
   { label: "CoinGecko", href: process.env.NEXT_PUBLIC_COINGECKO_URL },
 ].filter((link): link is { label: string; href: string } => Boolean(link.href));
@@ -120,14 +122,25 @@ function countdownForRace(currentRace: CurrentRaceView, now: number): number {
 
 function HeaderLogo() {
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <Link href="/" className="flex min-w-0 items-center gap-3">
       <img
         src="/images/bullrun-logo.jpg"
         alt="BULLRUN"
         className="h-10 w-10 shrink-0 rounded-full border border-[#5b171d] object-cover shadow-[0_0_28px_rgba(223,16,28,0.28)]"
       />
       <span className="text-sm font-black tracking-[0.14em] text-[#f7f7f2]">BULLRUN</span>
-    </div>
+    </Link>
+  );
+}
+
+function SiteHeader() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-[#241013] bg-black/88 backdrop-blur-md">
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <HeaderLogo />
+        <TopLinks />
+      </div>
+    </header>
   );
 }
 
@@ -145,10 +158,6 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,#030303_0%,rgba(3,3,3,0.84)_34%,rgba(18,5,7,0.42)_68%,#030303_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(0deg,#050505,transparent)]" />
-      <header className="relative z-10 mx-auto flex max-w-7xl items-center px-4 py-5 sm:px-6 lg:px-8">
-        <HeaderLogo />
-        <TopLinks />
-      </header>
       <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-14 pt-10 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8 lg:pt-20">
         <div>
           <img
@@ -224,6 +233,20 @@ function TopLinks() {
 
   return (
     <div className="ml-auto flex min-w-0 items-center gap-2">
+      <nav className="hidden items-center gap-1 md:flex">
+        <a
+          href="#how-it-works"
+          className="px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-[#c8c8c4] transition hover:text-[#f7f7f2]"
+        >
+          How It Works
+        </a>
+        <a
+          href="#links"
+          className="px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-[#c8c8c4] transition hover:text-[#f7f7f2]"
+        >
+          Links
+        </a>
+      </nav>
       {bullrunCa ? (
         <button
           type="button"
@@ -234,18 +257,20 @@ function TopLinks() {
           <span className="truncate">CA: {shortAddress(bullrunCa)}</span>
           <Copy className="h-3.5 w-3.5 shrink-0 text-[#df101c]" aria-hidden="true" />
         </button>
-      ) : null}
-      {process.env.NEXT_PUBLIC_BULLRUN_X_URL ? (
-        <a
-          href={process.env.NEXT_PUBLIC_BULLRUN_X_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex h-9 w-9 items-center justify-center border border-[#4a171b] bg-black/65 text-sm font-black text-[#f7f7f2] backdrop-blur-sm transition hover:border-[#df101c]"
-          title="Open BULLRUN on X"
-        >
-          X
-        </a>
-      ) : null}
+      ) : (
+        <span className="inline-flex max-w-[160px] items-center gap-2 border border-[#4a171b] bg-black/65 px-3 py-2 text-xs font-semibold text-[#f7f7f2] backdrop-blur-sm sm:max-w-none">
+          CA: soon
+        </span>
+      )}
+      <a
+        href={bullrunXUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex h-9 w-9 items-center justify-center border border-[#4a171b] bg-black/65 text-sm font-black text-[#f7f7f2] backdrop-blur-sm transition hover:border-[#df101c]"
+        title="Open BULLRUN on X"
+      >
+        X
+      </a>
     </div>
   );
 }
@@ -614,7 +639,7 @@ function FooterLinks() {
   }
 
   return (
-    <footer className="border-t border-[#241013] bg-black">
+    <footer id="links" className="border-t border-[#241013] bg-black">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div className="flex items-center gap-3">
           <img src="/images/bullrun-logo.jpg" alt="" className="h-10 w-10 rounded-full border border-[#5b171d] object-cover" />
@@ -660,6 +685,7 @@ export function LiveDashboard({ initialData }: { initialData: DashboardData }) {
 
   return (
     <main className="min-h-screen bg-[#050505] text-[#f7f7f2]">
+      <SiteHeader />
       <Hero currentRace={currentRace} now={now} />
       <CurrentRace currentRace={currentRace} />
       <HowItWorks />
@@ -680,6 +706,7 @@ export function LiveRacePage({ initialData }: { initialData: DashboardData }) {
 
   return (
     <main className="min-h-screen bg-[#050505] text-[#f7f7f2]">
+      <SiteHeader />
       <Hero currentRace={currentRace} now={now} />
       <CurrentRace currentRace={currentRace} />
       <RaceRules />
