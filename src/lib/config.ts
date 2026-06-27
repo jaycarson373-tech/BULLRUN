@@ -1,3 +1,5 @@
+import { LAUNCH_BULLRUN_CA } from "@/lib/constants";
+
 export function readEnv(name: string): string | undefined {
   const value = process.env[name];
   return value && value.trim().length > 0 ? value.trim() : undefined;
@@ -15,7 +17,7 @@ export const config = {
   apiEnableAutoTick: (readEnv("API_ENABLE_AUTO_TICK") ?? "true") !== "false",
   defaultCreatorFeeSol: Number(readEnv("DEFAULT_CREATOR_FEE_SOL") ?? 2),
   testMode: (readEnv("TEST_MODE") ?? "false") === "true",
-  bullrunMint: readEnv("BULLRUN_MINT") ?? readEnv("NEXT_PUBLIC_BULLRUN_CA"),
+  bullrunMint: readEnv("BULLRUN_MINT") ?? readEnv("NEXT_PUBLIC_BULLRUN_CA") ?? LAUNCH_BULLRUN_CA,
   bullrunMinHolding: Number(readEnv("BULLRUN_MIN_HOLDING") ?? 100_000),
   winningBullRewardVault: readEnv("WINNING_BULL_REWARD_VAULT"),
   bullrunHolderRewardVault: readEnv("BULLRUN_HOLDER_REWARD_VAULT"),

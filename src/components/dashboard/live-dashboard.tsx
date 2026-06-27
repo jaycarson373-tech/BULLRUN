@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { LAUNCH_BULLRUN_CA } from "@/lib/constants";
 import { formatClockDuration, formatDateTime } from "@/lib/time";
 import type {
   CurrentRaceView,
@@ -33,7 +34,7 @@ const currency = new Intl.NumberFormat("en-US", {
 });
 
 const bullrunXUrl = process.env.NEXT_PUBLIC_BULLRUN_X_URL ?? "https://x.com/TheBullRunSol_";
-const bullrunCa = process.env.NEXT_PUBLIC_BULLRUN_CA;
+const bullrunCa = process.env.NEXT_PUBLIC_BULLRUN_CA ?? LAUNCH_BULLRUN_CA;
 const buyUrl = process.env.NEXT_PUBLIC_BUY_BULLRUN_URL;
 const bullrunLinks = [
   { label: "Pump.fun", href: process.env.NEXT_PUBLIC_PUMP_FUN_URL },
