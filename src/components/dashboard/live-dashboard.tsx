@@ -7,7 +7,9 @@ import {
   CalendarClock,
   ChevronRight,
   CircleDollarSign,
+  Copy,
   Crown,
+  ExternalLink,
   Shield,
   Trophy,
 } from "lucide-react";
@@ -29,12 +31,29 @@ const currency = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
+const bullrunCa = process.env.NEXT_PUBLIC_BULLRUN_CA;
+const bullrunLinks = [
+  { label: "Pump.fun", href: process.env.NEXT_PUBLIC_PUMP_FUN_URL },
+  { label: "Dexscreener", href: process.env.NEXT_PUBLIC_DEXSCREENER_URL },
+  { label: "X", href: process.env.NEXT_PUBLIC_BULLRUN_X_URL },
+  { label: "Buy $BULLRUN", href: process.env.NEXT_PUBLIC_BUY_BULLRUN_URL },
+  { label: "CoinGecko", href: process.env.NEXT_PUBLIC_COINGECKO_URL },
+].filter((link): link is { label: string; href: string } => Boolean(link.href));
+
 function formatMarketCap(value: number): string {
   if (value >= 1_000_000) {
     return `$${(value / 1_000_000).toFixed(2)}M`;
   }
 
   return `$${currency.format(value)}`;
+}
+
+function shortAddress(value: string): string {
+  if (value.length <= 12) {
+    return value;
+  }
+
+  return `${value.slice(0, 4)}...${value.slice(-4)}`;
 }
 
 function signedPercent(value: number): string {
@@ -115,6 +134,7 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
           <Shield className="h-5 w-5" aria-hidden="true" />
           <span>BULLRUN</span>
         </div>
+        <TopLinks />
       </header>
       <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pt-24">
         <div>
@@ -157,6 +177,41 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
         </div>
       </div>
     </section>
+  );
+}
+
+function TopLinks() {
+  const copyCa = () => {
+    if (bullrunCa) {
+      navigator.clipboard.writeText(bullrunCa).catch(() => undefined);
+    }
+  };
+
+  return (
+    <div className="ml-auto flex min-w-0 items-center gap-2">
+      {bullrunCa ? (
+        <button
+          type="button"
+          onClick={copyCa}
+          className="inline-flex max-w-[160px] items-center gap-2 border border-[#3a3221] bg-black/60 px-3 py-2 text-xs font-semibold text-[#f5efe1] backdrop-blur-sm transition hover:border-[#d7a940] sm:max-w-none"
+          title="Copy contract address"
+        >
+          <span className="truncate">CA: {shortAddress(bullrunCa)}</span>
+          <Copy className="h-3.5 w-3.5 shrink-0 text-[#d7a940]" aria-hidden="true" />
+        </button>
+      ) : null}
+      {process.env.NEXT_PUBLIC_BULLRUN_X_URL ? (
+        <a
+          href={process.env.NEXT_PUBLIC_BULLRUN_X_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-9 w-9 items-center justify-center border border-[#3a3221] bg-black/60 text-sm font-black text-[#f5efe1] backdrop-blur-sm transition hover:border-[#d7a940]"
+          title="Open BULLRUN on X"
+        >
+          X
+        </a>
+      ) : null}
+    </div>
   );
 }
 
@@ -394,6 +449,37 @@ function PreviousWinners({ history }: { history: RaceHistoryView[] }) {
   );
 }
 
+function FooterLinks() {
+  if (bullrunLinks.length === 0) {
+    return null;
+  }
+
+  return (
+    <footer className="border-t border-[#242424] bg-black">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div>
+          <p className="text-sm font-semibold text-[#d7a940]">BULLRUN</p>
+          <p className="mt-1 text-sm text-[#a8a29a]">Season One market cap league</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {bullrunLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 border border-[#2a2a2a] bg-[#0d0d0d] px-3 py-2 text-sm font-semibold text-[#f5efe1] transition hover:border-[#d7a940] hover:text-[#d7a940]"
+            >
+              {link.label}
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 export function LiveDashboard({ initialData }: { initialData: DashboardData }) {
   const { data, now } = useLiveData(initialData);
   const currentRace = useMemo(() => data.currentRace, [data.currentRace]);
@@ -406,6 +492,7 @@ export function LiveDashboard({ initialData }: { initialData: DashboardData }) {
       <Standings standings={data.standings} />
       <Upcoming upcoming={data.upcomingRaces} now={now} />
       <PreviousWinners history={data.raceHistory} />
+      <FooterLinks />
     </main>
   );
 }
