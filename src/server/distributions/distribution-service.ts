@@ -18,6 +18,9 @@ export function createDistributionForRace(race: Race, now = new Date()): Distrib
     winnerAmount: round(total * 0.5, 4),
     holderAmount: round(total * 0.25, 4),
     championshipAmount: round(total * 0.25, 4),
+    winningBullPotSol: round(total * 0.5, 4),
+    bullrunHolderPotSol: round(total * 0.25, 4),
+    championshipPotSol: round(total * 0.25, 4),
     txStatus: "queued",
     readyAt: new Date(now.getTime() + 5 * 60 * 1000).toISOString(),
     createdAt: now.toISOString(),
@@ -40,6 +43,12 @@ export async function queueDistribution(repo: BullrunRepository, race: Race, now
   }
 
   await repo.upsertDistribution(distribution);
+  await repo.upsertRace({
+    ...race,
+    winningBullPotSol: distribution.winningBullPotSol,
+    bullrunHolderPotSol: distribution.bullrunHolderPotSol,
+    championshipPotSol: distribution.championshipPotSol,
+  });
   await repo.appendLog("info", "Distribution queued", {
     raceId: race.id,
     winningBull: race.winner,

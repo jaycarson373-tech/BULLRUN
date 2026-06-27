@@ -64,6 +64,10 @@ function signedPercent(value: number): string {
   return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 }
 
+function formatSol(value: number): string {
+  return `${value.toFixed(4)} SOL`;
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -287,6 +291,52 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
+function RaceRewardPots({ race }: { race: CurrentRaceView["race"] }) {
+  const cards = [
+    {
+      label: "Winning Bull Reward Pot",
+      subtitle: "50% of race fees",
+      value: race?.winningBullPotSol ?? 0,
+      note: "Paid to holders of the winning bull after race finalizes",
+      icon: <Crown className="h-5 w-5" aria-hidden="true" />,
+    },
+    {
+      label: "BULLRUN Holder Reward Pot",
+      subtitle: "25% of race fees",
+      value: race?.bullrunHolderPotSol ?? 0,
+      note: "Paid to eligible 100K+ BULLRUN holders",
+      icon: <Users className="h-5 w-5" aria-hidden="true" />,
+    },
+    {
+      label: "Championship Finals Pot",
+      subtitle: "25% of race fees",
+      value: race?.championshipPotSol ?? 0,
+      note: "Added to the Championship Finals vault after race finalizes",
+      icon: <Trophy className="h-5 w-5" aria-hidden="true" />,
+    },
+  ] as const;
+
+  return (
+    <div className="mt-4 grid gap-3 lg:grid-cols-3">
+      {cards.map((card) => (
+        <article key={card.label} className="border border-[#301316] bg-black/94 p-4 shadow-[0_0_24px_rgba(0,0,0,0.35)]">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-black text-[#f7f7f2]">{card.label}</p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#df101c]">{card.subtitle}</p>
+            </div>
+            <div className="grid h-9 w-9 shrink-0 place-items-center border border-[#4a171b] bg-[#120608] text-[#df101c]">
+              {card.icon}
+            </div>
+          </div>
+          <p className="text-2xl font-black text-[#f7f7f2]">{formatSol(card.value)}</p>
+          <p className="mt-3 text-xs leading-5 text-[#a8a29a]">{card.note}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
   const sorted = [...currentRace.competitors].sort((a, b) => b.currentMarketCap - a.currentMarketCap);
   const leader = sorted[0];
@@ -366,6 +416,7 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
                 </div>
               ))}
             </div>
+            <RaceRewardPots race={currentRace.race} />
           </div>
         </div>
       </div>

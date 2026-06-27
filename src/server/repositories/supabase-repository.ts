@@ -34,6 +34,9 @@ type RaceRow = {
   winner: string | null;
   status: Race["status"];
   distribution_complete: boolean;
+  winning_bull_pot_sol?: number | null;
+  bullrun_holder_pot_sol?: number | null;
+  championship_pot_sol?: number | null;
   updated_at: string | null;
 };
 
@@ -44,6 +47,9 @@ type DistributionRow = {
   winner_amount: number;
   holder_amount: number;
   championship_amount: number;
+  winning_bull_pot_sol?: number | null;
+  bullrun_holder_pot_sol?: number | null;
+  championship_pot_sol?: number | null;
   tx_status: Distribution["txStatus"];
   ready_at: string;
   created_at: string;
@@ -123,12 +129,15 @@ function toRace(row: RaceRow): Race {
     winner: row.winner,
     status: row.status,
     distributionComplete: row.distribution_complete,
+    winningBullPotSol: Number(row.winning_bull_pot_sol ?? 0),
+    bullrunHolderPotSol: Number(row.bullrun_holder_pot_sol ?? 0),
+    championshipPotSol: Number(row.championship_pot_sol ?? 0),
     updatedAt: row.updated_at ?? undefined,
   };
 }
 
-function fromRace(race: Race): RaceRow {
-  return {
+function fromRace(race: Race, includePotColumns = true): RaceRow {
+  const row: RaceRow = {
     id: race.id,
     season: race.season,
     race_number: race.raceNumber,
@@ -146,6 +155,14 @@ function fromRace(race: Race): RaceRow {
     distribution_complete: race.distributionComplete,
     updated_at: new Date().toISOString(),
   };
+
+  if (includePotColumns) {
+    row.winning_bull_pot_sol = race.winningBullPotSol;
+    row.bullrun_holder_pot_sol = race.bullrunHolderPotSol;
+    row.championship_pot_sol = race.championshipPotSol;
+  }
+
+  return row;
 }
 
 function toDistribution(row: DistributionRow): Distribution {
@@ -156,6 +173,9 @@ function toDistribution(row: DistributionRow): Distribution {
     winnerAmount: row.winner_amount,
     holderAmount: row.holder_amount,
     championshipAmount: row.championship_amount,
+    winningBullPotSol: Number(row.winning_bull_pot_sol ?? row.winner_amount ?? 0),
+    bullrunHolderPotSol: Number(row.bullrun_holder_pot_sol ?? row.holder_amount ?? 0),
+    championshipPotSol: Number(row.championship_pot_sol ?? row.championship_amount ?? 0),
     txStatus: row.tx_status,
     readyAt: row.ready_at,
     createdAt: row.created_at,
@@ -166,8 +186,8 @@ function toDistribution(row: DistributionRow): Distribution {
   };
 }
 
-function fromDistribution(distribution: Distribution): DistributionRow {
-  return {
+function fromDistribution(distribution: Distribution, includePotColumns = true): DistributionRow {
+  const row: DistributionRow = {
     id: distribution.id,
     race_id: distribution.raceId,
     winning_bull: distribution.winningBull,
@@ -182,6 +202,14 @@ function fromDistribution(distribution: Distribution): DistributionRow {
     tx_signatures: distribution.txSignatures,
     failed_reason: distribution.failedReason,
   };
+
+  if (includePotColumns) {
+    row.winning_bull_pot_sol = distribution.winningBullPotSol;
+    row.bullrun_holder_pot_sol = distribution.bullrunHolderPotSol;
+    row.championship_pot_sol = distribution.championshipPotSol;
+  }
+
+  return row;
 }
 
 function toSeason(row: SeasonRow): Season {
@@ -234,8 +262,18 @@ async function throwIfError<T>(response: { data: T; error: { message: string } |
   return response.data;
 }
 
+function isMissingPotColumnError(message: string): boolean {
+  return (
+    message.includes("winning_bull_pot_sol") ||
+    message.includes("bullrun_holder_pot_sol") ||
+    message.includes("championship_pot_sol")
+  );
+}
+
 export class SupabaseRepository implements BullrunRepository {
   private readonly client = getSupabaseAdmin();
+  private racePotColumnsAvailable = true;
+  private distributionPotColumnsAvailable = true;
 
   async getBulls(): Promise<Bull[]> {
     const rows = await throwIfError(await this.client.from("bulls").select("*").order("season_rank"));
@@ -262,7 +300,14 @@ export class SupabaseRepository implements BullrunRepository {
   }
 
   async upsertRace(race: Race): Promise<void> {
-    await throwIfError(await this.client.from("races").upsert(fromRace(race)));
+    const response = await this.client.from("races").upsert(fromRace(race, this.racePotColumnsAvailable));
+    if (response.error && isMissingPotColumnError(response.error.message)) {
+      this.racePotColumnsAvailable = false;
+      await throwIfError(await this.client.from("races").upsert(fromRace(race, false)));
+      return;
+    }
+
+    await throwIfError(response);
   }
 
   async getDistributions(): Promise<Distribution[]> {
@@ -278,7 +323,16 @@ export class SupabaseRepository implements BullrunRepository {
   }
 
   async upsertDistribution(distribution: Distribution): Promise<void> {
-    await throwIfError(await this.client.from("distributions").upsert(fromDistribution(distribution)));
+    const response = await this.client
+      .from("distributions")
+      .upsert(fromDistribution(distribution, this.distributionPotColumnsAvailable));
+    if (response.error && isMissingPotColumnError(response.error.message)) {
+      this.distributionPotColumnsAvailable = false;
+      await throwIfError(await this.client.from("distributions").upsert(fromDistribution(distribution, false)));
+      return;
+    }
+
+    await throwIfError(response);
   }
 
   async getSeason(): Promise<Season> {

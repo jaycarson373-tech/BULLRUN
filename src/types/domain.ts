@@ -40,6 +40,9 @@ export interface Race {
   winner: string | null;
   status: RaceStatus;
   distributionComplete: boolean;
+  winningBullPotSol: number;
+  bullrunHolderPotSol: number;
+  championshipPotSol: number;
   updatedAt?: string;
 }
 
@@ -50,6 +53,9 @@ export interface Distribution {
   winnerAmount: number;
   holderAmount: number;
   championshipAmount: number;
+  winningBullPotSol: number;
+  bullrunHolderPotSol: number;
+  championshipPotSol: number;
   txStatus: TxStatus;
   readyAt: string;
   createdAt: string;

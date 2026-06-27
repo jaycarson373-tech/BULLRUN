@@ -44,6 +44,9 @@ export function generateSeasonSchedule(bulls: Bull[], seasonStart = getSeasonSta
       winner: null,
       status: "scheduled",
       distributionComplete: false,
+      winningBullPotSol: 0,
+      bullrunHolderPotSol: 0,
+      championshipPotSol: 0,
     };
   });
 }
