@@ -8,11 +8,9 @@ import {
   ChevronRight,
   CircleDollarSign,
   Crown,
-  Gauge,
   Shield,
   Trophy,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { formatClockDuration, formatDateTime } from "@/lib/time";
@@ -112,18 +110,11 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
         className="absolute inset-0 h-full w-full object-cover opacity-[0.58]"
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505_0%,rgba(5,5,5,0.78)_34%,rgba(5,5,5,0.38)_68%,#050505_100%)]" />
-      <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+      <header className="relative z-10 mx-auto flex max-w-7xl items-center px-4 py-5 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 text-sm font-semibold text-[#f4d27a]">
           <Shield className="h-5 w-5" aria-hidden="true" />
           <span>BULLRUN</span>
         </div>
-        <Link
-          href="/admin"
-          className="inline-flex h-10 items-center gap-2 rounded border border-[#3a3221] bg-black/40 px-3 text-sm text-[#f5efe1] hover:border-[#d7a940]"
-        >
-          <Gauge className="h-4 w-4" aria-hidden="true" />
-          Admin
-        </Link>
       </header>
       <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pt-24">
         <div>
