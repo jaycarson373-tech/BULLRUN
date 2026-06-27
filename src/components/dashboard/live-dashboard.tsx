@@ -1,0 +1,416 @@
+"use client";
+
+/* eslint-disable @next/next/no-img-element */
+
+import {
+  Activity,
+  CalendarClock,
+  ChevronRight,
+  CircleDollarSign,
+  Crown,
+  Gauge,
+  Shield,
+  Trophy,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+
+import { formatClockDuration, formatDateTime } from "@/lib/time";
+import type {
+  CurrentRaceView,
+  DashboardData,
+  DistributionSummary,
+  RaceHistoryView,
+  Standing,
+  UpcomingRaceView,
+} from "@/types/domain";
+
+import { BullAvatar } from "./bull-avatar";
+
+const currency = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+});
+
+function formatMarketCap(value: number): string {
+  if (value >= 1_000_000) {
+    return `$${(value / 1_000_000).toFixed(2)}M`;
+  }
+
+  return `$${currency.format(value)}`;
+}
+
+function signedPercent(value: number): string {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Request failed: ${url}`);
+  }
+
+  return response.json() as Promise<T>;
+}
+
+function useLiveData(initialData: DashboardData) {
+  const [data, setData] = useState(initialData);
+  const [now, setNow] = useState(() => new Date(initialData.currentRace.serverTime).getTime());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refresh() {
+      const [currentRace, standings, upcomingRaces, raceHistory, distributionSummary] = await Promise.all([
+        fetchJson<CurrentRaceView>("/api/current-race"),
+        fetchJson<Standing[]>("/api/standings"),
+        fetchJson<UpcomingRaceView[]>("/api/schedule/upcoming"),
+        fetchJson<RaceHistoryView[]>("/api/races/history?limit=8"),
+        fetchJson<DistributionSummary>("/api/distributions/summary"),
+      ]);
+
+      if (!cancelled) {
+        setData({ currentRace, standings, upcomingRaces, raceHistory, distributionSummary });
+      }
+    }
+
+    const timer = window.setInterval(refresh, 30_000);
+    refresh().catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, []);
+
+  return { data, now };
+}
+
+function countdownForRace(currentRace: CurrentRaceView, now: number): number {
+  if (!currentRace.race) {
+    return 0;
+  }
+
+  const target = currentRace.status === "live" ? currentRace.race.endTime : currentRace.race.startTime;
+  return Math.max(0, new Date(target).getTime() - now);
+}
+
+function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number }) {
+  const countdown = countdownForRace(currentRace, now);
+  const raceNumber = currentRace.race?.raceNumber ?? 0;
+  const label = currentRace.status === "live" ? "Live Countdown" : "Next Countdown";
+
+  return (
+    <section className="relative min-h-[520px] overflow-hidden border-b border-[#252525] bg-black md:min-h-[600px]">
+      <img
+        src="/images/bullrun-arena.jpg"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.58]"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505_0%,rgba(5,5,5,0.78)_34%,rgba(5,5,5,0.38)_68%,#050505_100%)]" />
+      <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-3 text-sm font-semibold text-[#f4d27a]">
+          <Shield className="h-5 w-5" aria-hidden="true" />
+          <span>BULLRUN</span>
+        </div>
+        <Link
+          href="/admin"
+          className="inline-flex h-10 items-center gap-2 rounded border border-[#3a3221] bg-black/40 px-3 text-sm text-[#f5efe1] hover:border-[#d7a940]"
+        >
+          <Gauge className="h-4 w-4" aria-hidden="true" />
+          Admin
+        </Link>
+      </header>
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pt-24">
+        <div>
+          <div className="mb-4 inline-flex items-center gap-2 border-l-2 border-[#b3212a] bg-black/45 px-3 py-2 text-sm text-[#d7a940]">
+            <span className="h-2 w-2 rounded-full bg-[#b3212a] live-pulse" />
+            Season One
+          </div>
+          <h1 className="max-w-3xl text-5xl font-black leading-[0.92] text-[#f5efe1] sm:text-7xl lg:text-8xl">
+            THE BULL RUN
+          </h1>
+          <div className="mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
+            <Metric label="Race" value={`${raceNumber || "-"} / 82`} />
+            <Metric label={label} value={formatClockDuration(countdown)} />
+            <Metric label="Vault" value={`${currentRace.race ? "Open" : "Closed"}`} />
+            <Metric label="Status" value={currentRace.status.toUpperCase()} />
+          </div>
+        </div>
+        <div className="self-end border-y border-[#2b2b2b] bg-black/55 p-4 backdrop-blur-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-[#a8a29a]">Current Race</p>
+              <p className="text-2xl font-bold text-[#f5efe1]">Race {raceNumber || "-"}</p>
+            </div>
+            <Activity className="h-8 w-8 text-[#d7a940]" aria-hidden="true" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {currentRace.competitors.map((competitor) => (
+              <div key={competitor.bull.id} className="border border-[#292929] bg-[#0b0b0b]/88 p-3">
+                <div className="flex items-center gap-3">
+                  <BullAvatar bull={competitor.bull} size="sm" />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{competitor.bull.name}</p>
+                    <p className="text-xs text-[#d7a940]">${competitor.bull.ticker}</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-lg font-bold">{signedPercent(competitor.percentChange)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border border-[#292929] bg-black/58 px-4 py-3">
+      <p className="text-xs text-[#9f988b]">{label}</p>
+      <p className="mt-1 text-lg font-bold text-[#f5efe1]">{value}</p>
+    </div>
+  );
+}
+
+function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
+  const sorted = [...currentRace.competitors].sort((a, b) => b.percentChange - a.percentChange);
+
+  return (
+    <section className="border-b border-[#242424] bg-[#080808]">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-sm text-[#d7a940]">Current Race</p>
+            <h2 className="text-3xl font-black">Four-Bull Market Cap Sprint</h2>
+          </div>
+          <div className="text-sm text-[#a8a29a]">Winner: highest percentage market cap increase</div>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {sorted.map((competitor, index) => (
+              <article key={competitor.bull.id} className="border border-[#2a2a2a] bg-[#111111] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <BullAvatar bull={competitor.bull} />
+                    <div className="min-w-0">
+                      <p className="truncate text-lg font-bold">{competitor.bull.name}</p>
+                      <p className="text-sm text-[#d7a940]">${competitor.bull.ticker}</p>
+                    </div>
+                  </div>
+                  <span className="grid h-8 w-8 shrink-0 place-items-center border border-[#3a3221] bg-black text-sm font-bold text-[#d7a940]">
+                    {index + 1}
+                  </span>
+                </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <dt className="text-[#8f8a80]">Market Cap</dt>
+                    <dd className="font-semibold">{formatMarketCap(competitor.currentMarketCap)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[#8f8a80]">% Change</dt>
+                    <dd className={competitor.percentChange >= 0 ? "font-semibold text-[#7dd181]" : "font-semibold text-[#e16161]"}>
+                      {signedPercent(competitor.percentChange)}
+                    </dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+          <div className="min-h-[420px] border border-[#2a2a2a] bg-[#101010] p-4">
+            <div className="mb-4 flex items-center justify-between text-sm text-[#a8a29a]">
+              <span>Start</span>
+              <span>Finish</span>
+            </div>
+            <div className="race-scanline grid gap-5 overflow-hidden bg-[#060606] p-4">
+              {currentRace.competitors.map((competitor) => (
+                <div key={competitor.bull.id} className="relative h-20 border-y border-[#252525] bg-[#0d0d0d]">
+                  <div className="absolute inset-y-0 right-6 w-px bg-[#d7a940]/70" />
+                  <div
+                    className="absolute top-1/2 flex -translate-y-1/2 items-center gap-3 transition-[left] duration-700 ease-out"
+                    style={{ left: `calc(${competitor.position}% - 34px)` }}
+                  >
+                    <BullAvatar bull={competitor.bull} size="sm" />
+                    <div className="hidden border border-[#302818] bg-black px-2 py-1 text-xs font-semibold text-[#f5efe1] sm:block">
+                      {competitor.bull.ticker} {signedPercent(competitor.percentChange)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Standings({ standings }: { standings: Standing[] }) {
+  return (
+    <section className="bg-[#050505]">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-5 flex items-center gap-3">
+          <Trophy className="h-6 w-6 text-[#d7a940]" aria-hidden="true" />
+          <h2 className="text-2xl font-black">Standings</h2>
+        </div>
+        <div className="overflow-x-auto border border-[#252525]">
+          <table className="min-w-full border-collapse text-left text-sm">
+            <thead className="bg-[#161616] text-[#a8a29a]">
+              <tr>
+                <th className="px-4 py-3">Rank</th>
+                <th className="px-4 py-3">Bull</th>
+                <th className="px-4 py-3">Wins</th>
+                <th className="px-4 py-3">Losses</th>
+                <th className="px-4 py-3">Average Gain</th>
+                <th className="px-4 py-3">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {standings.map((standing) => (
+                <tr key={standing.id} className="border-t border-[#252525] bg-[#0c0c0c]">
+                  <td className="px-4 py-3 font-bold text-[#d7a940]">{standing.seasonRank}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <BullAvatar bull={standing} size="sm" />
+                      <div>
+                        <p className="font-semibold">{standing.name}</p>
+                        <p className="text-xs text-[#d7a940]">${standing.ticker}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">{standing.wins}</td>
+                  <td className="px-4 py-3">{standing.losses}</td>
+                  <td className="px-4 py-3">{signedPercent(standing.averageGain)}</td>
+                  <td className="px-4 py-3 font-bold">{standing.points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number }) {
+  return (
+    <section className="border-y border-[#242424] bg-[#0a0a0a]">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-5 flex items-center gap-3">
+          <CalendarClock className="h-6 w-6 text-[#d7a940]" aria-hidden="true" />
+          <h2 className="text-2xl font-black">Upcoming Races</h2>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {upcoming.map((item) => (
+            <article key={item.race.id} className="border border-[#292929] bg-[#111111] p-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-[#d7a940]">Race {item.race.raceNumber}</p>
+                  <p className="text-sm text-[#a8a29a]">{formatDateTime(item.race.startTime)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-[#8f8a80]">Starts In</p>
+                  <p className="font-bold">{formatClockDuration(new Date(item.race.startTime).getTime() - now)}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {item.bulls.map((bull) => (
+                  <span key={bull.id} className="inline-flex items-center gap-2 border border-[#302818] bg-black px-2 py-1 text-sm">
+                    <BullAvatar bull={bull} size="sm" />
+                    {bull.ticker}
+                  </span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Treasury({ summary }: { summary: DistributionSummary }) {
+  return (
+    <section className="bg-[#050505]">
+      <div className="mx-auto grid max-w-7xl gap-4 px-4 py-10 sm:px-6 md:grid-cols-3 lg:px-8">
+        <TreasuryTile
+          icon={<Crown className="h-6 w-6" aria-hidden="true" />}
+          label="Championship Vault"
+          value={`${summary.championshipVaultSol.toFixed(4)} SOL`}
+        />
+        <TreasuryTile
+          icon={<CircleDollarSign className="h-6 w-6" aria-hidden="true" />}
+          label="Total Distributed"
+          value={`${summary.totalDistributedSol.toFixed(4)} SOL`}
+        />
+        <TreasuryTile
+          icon={<ChevronRight className="h-6 w-6" aria-hidden="true" />}
+          label="Last Distribution"
+          value={summary.lastDistribution ? `${summary.lastDistribution.txStatus.toUpperCase()}` : "None"}
+        />
+      </div>
+    </section>
+  );
+}
+
+function TreasuryTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="border border-[#292929] bg-[#111111] p-5">
+      <div className="mb-4 text-[#d7a940]">{icon}</div>
+      <p className="text-sm text-[#a8a29a]">{label}</p>
+      <p className="mt-2 text-2xl font-black">{value}</p>
+    </div>
+  );
+}
+
+function PreviousWinners({ history }: { history: RaceHistoryView[] }) {
+  return (
+    <section className="border-t border-[#242424] bg-[#080808]">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-5 flex items-center gap-3">
+          <Crown className="h-6 w-6 text-[#d7a940]" aria-hidden="true" />
+          <h2 className="text-2xl font-black">Previous Winners</h2>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+          {history.map((item) => (
+            <article key={item.race.id} className="border border-[#292929] bg-[#111111] p-4">
+              <p className="text-sm text-[#d7a940]">Race {item.race.raceNumber}</p>
+              {item.winner ? (
+                <div className="mt-3 flex items-center gap-3">
+                  <BullAvatar bull={item.winner} size="sm" />
+                  <div>
+                    <p className="font-bold">{item.winner.name}</p>
+                    <p className="text-sm text-[#a8a29a]">{item.winnerPercentGain ? signedPercent(item.winnerPercentGain) : "-"}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-[#a8a29a]">Pending</p>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function LiveDashboard({ initialData }: { initialData: DashboardData }) {
+  const { data, now } = useLiveData(initialData);
+  const currentRace = useMemo(() => data.currentRace, [data.currentRace]);
+
+  return (
+    <main className="min-h-screen bg-[#050505] text-[#f5efe1]">
+      <Hero currentRace={currentRace} now={now} />
+      <CurrentRace currentRace={currentRace} />
+      <Treasury summary={data.distributionSummary} />
+      <Standings standings={data.standings} />
+      <Upcoming upcoming={data.upcomingRaces} now={now} />
+      <PreviousWinners history={data.raceHistory} />
+    </main>
+  );
+}

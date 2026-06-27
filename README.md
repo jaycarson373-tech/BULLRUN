@@ -1,3 +1,39 @@
-# BULLRUN
+# BULLRUN v1
 
-Initial repository seed. Full project files will be added in the next commit.
+Sports-style crypto league MVP built with Next.js 16, TypeScript, Tailwind, Supabase, and a Railway worker.
+
+## Local
+
+```bash
+npm install
+npm run dev
+```
+
+Without Supabase env vars the app runs against seeded in-memory data. The local admin key is `dev-admin`.
+
+## Supabase
+
+1. Run `supabase/schema.sql` in your Supabase project.
+2. Set `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+3. Seed the season:
+
+```bash
+npm run seed -- --reset
+```
+
+Set `SEASON_START_ISO` before seeding to lock the 82-race schedule to a production start time.
+
+## Worker
+
+Railway can run the worker as either a daemon or one-shot cron.
+
+```bash
+npm run worker
+npm run worker:tick
+```
+
+Use `WORKER_MODE=daemon` for 30-second market-cap refreshes, or `WORKER_MODE=cron` for a single tick per Railway cron execution.
+
+## Environment
+
+Copy `.env.example` to `.env.local` for the Vercel app and to Railway variables for the worker. The market-cap service uses deterministic mock caps unless `MARKET_CAP_API_URL` is configured.
