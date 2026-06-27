@@ -120,7 +120,9 @@ function countdownForRace(currentRace: CurrentRaceView, now: number): number {
     return 0;
   }
 
-  const target = currentRace.status === "live" ? currentRace.race.endTime : currentRace.race.startTime;
+  const isActiveWindow =
+    new Date(currentRace.race.startTime).getTime() <= now && new Date(currentRace.race.endTime).getTime() > now;
+  const target = isActiveWindow || currentRace.status === "live" ? currentRace.race.endTime : currentRace.race.startTime;
   return Math.max(0, new Date(target).getTime() - now);
 }
 
@@ -151,7 +153,11 @@ function SiteHeader() {
 function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number }) {
   const countdown = countdownForRace(currentRace, now);
   const raceNumber = currentRace.race?.raceNumber ?? 0;
-  const label = currentRace.status === "live" ? "Live Countdown" : "Next Countdown";
+  const isActiveWindow = currentRace.race
+    ? new Date(currentRace.race.startTime).getTime() <= now && new Date(currentRace.race.endTime).getTime() > now
+    : false;
+  const displayStatus = isActiveWindow ? "live" : currentRace.status;
+  const label = displayStatus === "live" ? "Race Ends" : "Next Countdown";
 
   return (
     <section className="relative min-h-[620px] overflow-hidden border-b border-[#321014] bg-black">
@@ -197,7 +203,7 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
             <Metric label="Race" value={`${raceNumber || "-"} / 82`} />
             <Metric label={label} value={formatClockDuration(countdown)} />
             <Metric label="Top 8" value="Playoffs" />
-            <Metric label="Status" value={currentRace.status.toUpperCase()} />
+            <Metric label="Status" value={displayStatus.toUpperCase()} />
           </div>
         </div>
         <div className="motion-card self-end border border-[#341014] bg-black/68 p-4 shadow-[0_0_44px_rgba(223,16,28,0.12)] backdrop-blur-sm">

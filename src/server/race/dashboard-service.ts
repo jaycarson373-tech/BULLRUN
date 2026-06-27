@@ -28,6 +28,12 @@ async function maybeAutoTick(repo: BullrunRepository): Promise<void> {
   }
 }
 
+function isInsideRaceWindow(race: Race, now: Date): boolean {
+  const start = new Date(race.startTime);
+  const end = new Date(race.endTime);
+  return start <= now && end > now;
+}
+
 function competitorsForRace(race: Race, bulls: Bull[], currentSnapshot = race.liveMarketCaps): RaceCompetitorView[] {
   const byId = mapBulls(bulls);
   const snapshotWithChanges = currentSnapshot ? addPercentChanges(race.snapshotStart, currentSnapshot) : null;
@@ -64,12 +70,8 @@ export async function getCurrentRaceView(repo = getRepository()): Promise<Curren
   const bulls = await repo.getBulls();
   const races = await repo.getRaces();
   const active =
+    races.find((race) => isInsideRaceWindow(race, now)) ??
     races.find((race) => race.status === "live") ??
-    races.find((race) => {
-      const start = new Date(race.startTime);
-      const end = new Date(race.endTime);
-      return race.status === "scheduled" && start <= now && end > now;
-    }) ??
     races.find((race) => race.status === "scheduled" && new Date(race.startTime) > now) ??
     races.at(-1) ??
     null;
@@ -86,8 +88,11 @@ export async function getCurrentRaceView(repo = getRepository()): Promise<Curren
     };
   }
 
+  const start = new Date(active.startTime).getTime();
+  const end = new Date(active.endTime).getTime();
+  const displayStatus = isInsideRaceWindow(active, now) ? "live" : active.status;
   let currentSnapshot = active.liveMarketCaps;
-  if (active.status === "live") {
+  if (displayStatus === "live") {
     currentSnapshot = await getMarketCapSnapshot(
       active.bullIds
         .map((id) => bulls.find((bull) => bull.id === id))
@@ -97,15 +102,13 @@ export async function getCurrentRaceView(repo = getRepository()): Promise<Curren
     );
   }
 
-  const start = new Date(active.startTime).getTime();
-  const end = new Date(active.endTime).getTime();
   const elapsedMs = clamp(now.getTime() - start, 0, RACE_DURATION_MS);
 
   return {
     race: active,
-    status: active.status,
+    status: displayStatus,
     competitors: competitorsForRace(active, bulls, currentSnapshot),
-    countdownMs: active.status === "live" ? Math.max(0, end - now.getTime()) : Math.max(0, start - now.getTime()),
+    countdownMs: displayStatus === "live" ? Math.max(0, end - now.getTime()) : Math.max(0, start - now.getTime()),
     elapsedMs,
     totalRaceMs: RACE_DURATION_MS,
     serverTime: now.toISOString(),
