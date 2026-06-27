@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { LAUNCH_BULLRUN_CA } from "@/lib/constants";
 import { formatClockDuration, formatDateTime } from "@/lib/time";
 import type {
+  Bull,
   CurrentRaceView,
   DashboardData,
   DistributionSummary,
@@ -222,6 +223,7 @@ function Hero({ currentRace, now }: { currentRace: CurrentRaceView; now: number 
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{competitor.bull.name}</p>
                     <p className="text-xs text-[#df101c]">${competitor.bull.ticker}</p>
+                    <BullContractButton bull={competitor.bull} compact />
                   </div>
                 </div>
                 <p className="mt-3 text-lg font-black">{formatMarketCap(competitor.currentMarketCap)}</p>
@@ -294,6 +296,29 @@ function Metric({ label, value }: { label: string; value: string }) {
         {value}
       </p>
     </div>
+  );
+}
+
+function BullContractButton({ bull, compact = false }: { bull: Bull; compact?: boolean }) {
+  const copyMint = () => {
+    navigator.clipboard.writeText(bull.tokenMint).catch(() => undefined);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copyMint}
+      className={
+        compact
+          ? "mt-2 inline-flex max-w-full items-center gap-1.5 border border-[#321014] bg-black/70 px-2 py-1 text-[10px] font-semibold text-[#b9b9b4] transition hover:border-[#df101c] hover:text-[#f7f7f2]"
+          : "mt-3 inline-flex max-w-full items-center gap-2 border border-[#321014] bg-black/72 px-3 py-2 text-xs font-semibold text-[#b9b9b4] transition hover:border-[#df101c] hover:text-[#f7f7f2]"
+      }
+      title={`Copy ${bull.name} contract address`}
+    >
+      <span className="shrink-0 text-[#df101c]">CA</span>
+      <span className="min-w-0 truncate font-mono">{compact ? shortAddress(bull.tokenMint) : bull.tokenMint}</span>
+      <Copy className="h-3.5 w-3.5 shrink-0 text-[#df101c]" aria-hidden="true" />
+    </button>
   );
 }
 
@@ -376,6 +401,7 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
                     <div className="min-w-0">
                       <p className="truncate text-lg font-bold">{competitor.bull.name}</p>
                       <p className="text-sm text-[#df101c]">${competitor.bull.ticker}</p>
+                      <BullContractButton bull={competitor.bull} compact />
                     </div>
                   </div>
                   <span className="grid h-8 w-8 shrink-0 place-items-center border border-[#5b171d] bg-black text-sm font-black text-[#f7f7f2]">
@@ -479,6 +505,7 @@ function BullsGrid({ standings }: { standings: Standing[] }) {
                 <div className="min-w-0 border-t border-[#241013] pt-3">
                   <p className="truncate text-xl font-black">{standing.name}</p>
                   <p className="text-sm font-bold text-[#df101c]">${standing.ticker}</p>
+                  <BullContractButton bull={standing} />
                 </div>
               </div>
               <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
