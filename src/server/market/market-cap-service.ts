@@ -219,7 +219,7 @@ export async function getMarketCapSnapshot(
 
   for (const bull of bulls) {
     snapshot[bull.id] = {
-      marketCap: round(marketCaps[bull.id] ?? mockMarketCap(bull, at, race), 2),
+      marketCap: round(marketCaps[bull.id] ?? (config.testMode ? mockMarketCap(bull, at, race) : 0), 2),
       recordedAt: at.toISOString(),
     };
   }
