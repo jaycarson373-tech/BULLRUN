@@ -22,10 +22,13 @@ export function formatClockDuration(ms: number): string {
 }
 
 export function formatDateTime(dateIso: string): string {
+  const timeZone = process.env.NEXT_PUBLIC_DISPLAY_TIME_ZONE ?? "America/Toronto";
+
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone,
   }).format(new Date(dateIso));
 }

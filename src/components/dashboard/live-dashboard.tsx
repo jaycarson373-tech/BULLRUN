@@ -173,7 +173,9 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-[#292929] bg-black/58 px-4 py-3">
       <p className="text-xs text-[#9f988b]">{label}</p>
-      <p className="mt-1 text-lg font-bold text-[#f5efe1]">{value}</p>
+      <p className="mt-1 text-lg font-bold text-[#f5efe1]" suppressHydrationWarning>
+        {value}
+      </p>
     </div>
   );
 }
@@ -315,7 +317,9 @@ function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-[#8f8a80]">Starts In</p>
-                  <p className="font-bold">{formatClockDuration(new Date(item.race.startTime).getTime() - now)}</p>
+                  <p className="font-bold" suppressHydrationWarning>
+                    {formatClockDuration(new Date(item.race.startTime).getTime() - now)}
+                  </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
