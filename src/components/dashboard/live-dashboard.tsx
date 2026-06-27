@@ -293,7 +293,7 @@ function CurrentRace({ currentRace }: { currentRace: CurrentRaceView }) {
 
   return (
     <section id="live-race" className="relative scroll-mt-20 overflow-hidden border-b border-[#241013] bg-[#070707]">
-      <img src="/images/backgrounds/main-event.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/main-event.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_38%,rgba(223,16,28,0.12),transparent_34%),linear-gradient(180deg,rgba(5,5,5,0.18)_0%,rgba(5,5,5,0.34)_42%,#050505_100%)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -383,7 +383,7 @@ function HowItWorks() {
 
   return (
     <section id="how-it-works" className="relative scroll-mt-20 overflow-hidden border-b border-[#241013] bg-[#050505]">
-      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.58),rgba(5,5,5,0.28),rgba(5,5,5,0.58))]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6">
@@ -407,7 +407,7 @@ function HowItWorks() {
 function BullsGrid({ standings }: { standings: Standing[] }) {
   return (
     <section className="relative overflow-hidden border-b border-[#241013] bg-[#070707]">
-      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,7,0.48),rgba(7,7,7,0.58),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center gap-3">
@@ -449,7 +449,7 @@ function BullsGrid({ standings }: { standings: Standing[] }) {
 function Standings({ standings }: { standings: Standing[] }) {
   return (
     <section className="relative overflow-hidden bg-[#050505]">
-      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.52),rgba(5,5,5,0.72),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -526,7 +526,7 @@ function Standings({ standings }: { standings: Standing[] }) {
 function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number }) {
   return (
     <section className="relative overflow-hidden border-y border-[#241013] bg-[#090909]">
-      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.58),rgba(5,5,5,0.68),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex items-center gap-3">
@@ -567,7 +567,7 @@ function Upcoming({ upcoming, now }: { upcoming: UpcomingRaceView[]; now: number
 function Treasury({ summary }: { summary: DistributionSummary }) {
   return (
     <section className="relative overflow-hidden border-y border-[#2b1014] bg-[#050505]">
-      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(223,16,28,0.18),transparent_34%),linear-gradient(180deg,rgba(5,5,5,0.42),rgba(5,5,5,0.58),#050505)]" />
       <div className="relative mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto mb-7 flex max-w-7xl flex-col justify-between gap-5 md:flex-row md:items-end">
@@ -614,7 +614,7 @@ function TreasuryTile({ icon, label, value }: { icon: ReactNode; label: string; 
 function PreviousWinners({ history }: { history: RaceHistoryView[] }) {
   return (
     <section className="relative overflow-hidden border-t border-[#241013] bg-[#080808]">
-      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.64),rgba(5,5,5,0.7),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex items-center gap-3">
@@ -668,7 +668,7 @@ function FAQ() {
 
   return (
     <section className="relative overflow-hidden border-t border-[#241013] bg-[#050505]">
-      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.56),rgba(5,5,5,0.66),#050505)]" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-6">
@@ -691,7 +691,7 @@ function FAQ() {
 function FooterCta() {
   return (
     <section className="relative overflow-hidden border-t border-[#241013] bg-black">
-      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/floor-lights.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.62),rgba(5,5,5,0.42),rgba(5,5,5,0.72))]" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-5 px-4 py-12 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
@@ -730,7 +730,7 @@ function FooterLinks() {
 
   return (
     <footer id="links" className="relative scroll-mt-20 overflow-hidden border-t border-[#241013] bg-black">
-      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/arena-gate.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.68),rgba(5,5,5,0.58),rgba(5,5,5,0.78))]" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div className="flex items-center gap-3">
@@ -762,7 +762,7 @@ function FooterLinks() {
 function RaceRules() {
   return (
     <section className="relative overflow-hidden border-y border-[#241013] bg-[#090909]">
-      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.7]" />
+      <img src="/images/backgrounds/red-stands.jpg" alt="" className="arena-bg absolute inset-0 h-full w-full opacity-[0.35]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.58),rgba(5,5,5,0.68),#050505)]" />
       <div className="relative mx-auto grid max-w-7xl gap-3 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-8">
         <Metric label="Race Length" value="90 minutes" />
