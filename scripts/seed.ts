@@ -50,6 +50,7 @@ async function main() {
         ...current,
         name: bull.name,
         ticker: bull.ticker,
+        tokenMint: bull.tokenMint,
         image: bull.image,
         seasonRank: bull.seasonRank,
       });
