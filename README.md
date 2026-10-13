@@ -27,7 +27,10 @@ If the database already exists, run `supabase/payouts.sql` once before enabling 
 
 ## Worker
 
-Railway can run the worker as either a daemon or one-shot cron.
+Railway can run the worker as either a daemon or one-shot cron. In production,
+this worker is the sole race scheduler; public website/API requests never advance
+races or payouts. The local-only `API_ENABLE_AUTO_TICK` switch is ignored in
+production so web scaling cannot create competing schedulers.
 
 ```bash
 npm run worker
