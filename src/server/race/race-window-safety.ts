@@ -20,6 +20,21 @@ export type RaceWindowBlockReason =
 
 export const RACE_CAPTURE_GRACE_MS = 60_000;
 
+export function hasCompleteMarketCapSnapshot(
+  snapshot: Record<string, SnapshotValue> | null | undefined,
+  bullIds: string[],
+): boolean {
+  return bullIds.length > 0 && bullIds.every((id) => {
+    const value = snapshot?.[id];
+    return Boolean(
+      value &&
+      Number.isFinite(value.marketCap) &&
+      (value.marketCap ?? 0) > 0 &&
+      Number.isFinite(Date.parse(value.recordedAt ?? "")),
+    );
+  });
+}
+
 /** Fail closed when a worker can no longer capture a race close to its actual window. */
 export function getRaceWindowBlockReason(
   race: RaceWindowRecord,
@@ -41,16 +56,7 @@ export function getRaceWindowBlockReason(
     return null;
   }
 
-  const hasCompleteStartSnapshot = race.bullIds.length > 0 && race.bullIds.every((id) => {
-    const snapshot = race.snapshotStart?.[id];
-    return Boolean(
-      snapshot &&
-      Number.isFinite(snapshot.marketCap) &&
-      (snapshot.marketCap ?? 0) > 0 &&
-      Number.isFinite(Date.parse(snapshot.recordedAt ?? "")),
-    );
-  });
-  if (!hasCompleteStartSnapshot) return "start-snapshot-missing";
+  if (!hasCompleteMarketCapSnapshot(race.snapshotStart, race.bullIds)) return "start-snapshot-missing";
   if (current - end > graceMs) return "end-snapshot-window-missed";
   return null;
 }

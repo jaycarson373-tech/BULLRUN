@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getRaceWindowBlockReason, RACE_CAPTURE_GRACE_MS } from "../src/server/race/race-window-safety.ts";
+import { getRaceWindowBlockReason, hasCompleteMarketCapSnapshot, RACE_CAPTURE_GRACE_MS } from "../src/server/race/race-window-safety.ts";
 
 const start = Date.parse("2026-10-13T12:00:00.000Z");
 const end = Date.parse("2026-10-13T13:30:00.000Z");
@@ -31,6 +31,13 @@ test("live race requires a complete start snapshot", () => {
   const partial = { ...startSnapshot };
   delete partial["bull-d"];
   assert.equal(getRaceWindowBlockReason({ ...base, status: "live", snapshotStart: partial }, new Date(start + 10_000)), "start-snapshot-missing");
+});
+
+test("a price snapshot is complete only when every race bull has a positive, timestamped market cap", () => {
+  assert.equal(hasCompleteMarketCapSnapshot(startSnapshot, base.bullIds), true);
+  assert.equal(hasCompleteMarketCapSnapshot({ ...startSnapshot, [base.bullIds[0]]: { marketCap: 0, recordedAt: new Date(start).toISOString() } }, base.bullIds), false);
+  assert.equal(hasCompleteMarketCapSnapshot(Object.fromEntries(base.bullIds.slice(1).map((id) => [id, startSnapshot[id]])), base.bullIds), false);
+  assert.equal(hasCompleteMarketCapSnapshot({ ...startSnapshot, [base.bullIds[0]]: { marketCap: 1 } }, base.bullIds), false);
 });
 
 test("live race must be finalized within the end-capture grace", () => {
