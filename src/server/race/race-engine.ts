@@ -7,6 +7,7 @@ import { attachPayoutPlanToDistribution, executeReadyDistributions } from "../pa
 import { getRepository } from "../repositories/repository";
 import type { BullrunRepository } from "../repositories/types";
 import { applyCompletedRaceToStandings } from "../standings/standings-service";
+import { getRaceWindowBlockReason } from "./race-window-safety";
 
 function bullsForRace(race: Race, bulls: Bull[]): Bull[] {
   const byId = new Map(bulls.map((bull) => [bull.id, bull]));
@@ -116,6 +117,18 @@ export async function runRaceEngineTick(options: { now?: Date; repo?: BullrunRep
 
     if (race.status === "completed" || race.status === "paused") {
       continue;
+    }
+
+    const blockedReason = getRaceWindowBlockReason(race, now);
+    if (blockedReason) {
+      await repo.updateSeason({ ...season, paused: true, updatedAt: now.toISOString() });
+      await repo.appendLog("error", "Season paused after missing a race market-cap capture window", {
+        raceId: race.id,
+        raceNumber: race.raceNumber,
+        reason: blockedReason,
+        checkedAt: now.toISOString(),
+      });
+      return;
     }
 
     if (now >= end) {

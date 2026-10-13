@@ -284,11 +284,12 @@ export async function getMarketCapSnapshot(
   ]);
   const marketCaps = { ...(heliusCaps ?? {}), ...(dexScreenerCaps ?? {}), ...(providerCaps ?? {}) };
   const snapshot: RaceSnapshot = {};
+  const recordedAt = new Date().toISOString();
 
   for (const bull of bulls) {
     snapshot[bull.id] = {
       marketCap: round(marketCaps[bull.id] ?? (config.testMode ? mockMarketCap(bull, at, race) : 0), 2),
-      recordedAt: at.toISOString(),
+      recordedAt,
     };
   }
 
