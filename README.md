@@ -49,6 +49,14 @@ Set `NEXT_PUBLIC_BULLRUN_CA` and `NEXT_PUBLIC_BULLRUN_X_URL` to show the header 
 
 `GET /api/health` checks persistent storage reachability and reports the selected market-data mode. A 503 response means the site cannot serve a persistent league. The endpoint does not expose credentials or claim to verify market-provider reachability.
 
+Before announcing the production site, verify that the canonical host is bound to this Next.js app and not an unrelated static deployment:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://your-production-host.example npm run preflight:production
+```
+
+The preflight requires `/api/health`, `/api/current-race`, and `/api/standings` to return their expected JSON shapes, and requires the persistent database health check to pass. It does not verify market-provider freshness, payout wallets, or race settlement; those need separate funded staging checks.
+
 Automated payouts are Railway-only and are disabled unless `PAYOUT_EXECUTION_ENABLED=true`. The worker snapshots holders at race completion, requires winning-bull holders to also hold at least `BULLRUN_MIN_HOLDING`, weights both payout groups by token holdings, filters payouts below `MIN_PAYOUT_SOL`, and sends SOL from the configured reward vault private keys. Fund the reward wallets before enabling this, or set `PAYOUT_SPLIT_FROM_CLAIM_WALLET=true` to first split the race amount from `CLAIM_WALLET_PRIVATE_KEY`/`PAYOUT_SIGNER_PRIVATE_KEY` into the two reward wallets plus the Championship Vault.
 
 After changing launch bulls or resetting production data, run:
