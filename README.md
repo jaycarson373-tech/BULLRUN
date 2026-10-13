@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Without Supabase env vars, local development runs against seeded in-memory data. Production API routes fail closed instead of presenting ephemeral sample state as a real league. The local admin key is `dev-admin`.
+Without Supabase env vars, local development runs against seeded in-memory data. Production always requires Supabase and fails closed when it is unavailable, even if `TEST_MODE=true`; production will never serve the ephemeral sample league. The local admin key is `dev-admin`.
 
 ## Supabase
 
