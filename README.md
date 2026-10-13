@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Without Supabase env vars the app runs against seeded in-memory data. The local admin key is `dev-admin`.
+Without Supabase env vars, local development runs against seeded in-memory data. Production API routes fail closed instead of presenting ephemeral sample state as a real league. The local admin key is `dev-admin`.
 
 ## Supabase
 
@@ -43,6 +43,8 @@ Copy `.env.example` to `.env.local` for the Vercel app and to Railway variables 
 For the fixed-supply BULLRUN setup, set `TOKEN_FIXED_SUPPLY=1000000000`. Displayed market cap is `live price * 1B`, and race winners are selected by the highest market cap among the 4 bulls at the race end snapshot. `HELIUS_API_KEY` enables CA-based price lookup through Helius `getAsset` when Helius returns `token_info.price_info`; `MARKET_CAP_API_URL` can still override this with direct market caps or prices.
 
 Set `NEXT_PUBLIC_BULLRUN_CA` and `NEXT_PUBLIC_BULLRUN_X_URL` to show the header CA copy button and X link. Footer buttons appear when `NEXT_PUBLIC_PUMP_FUN_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_BUY_BULLRUN_URL`, or `NEXT_PUBLIC_COINGECKO_URL` are set.
+
+`GET /api/health` checks persistent storage reachability and reports the selected market-data mode. A 503 response means the site cannot serve a persistent league. The endpoint does not expose credentials or claim to verify market-provider reachability.
 
 Automated payouts are Railway-only and are disabled unless `PAYOUT_EXECUTION_ENABLED=true`. The worker snapshots holders at race completion, requires winning-bull holders to also hold at least `BULLRUN_MIN_HOLDING`, weights both payout groups by token holdings, filters payouts below `MIN_PAYOUT_SOL`, and sends SOL from the configured reward vault private keys. Fund the reward wallets before enabling this, or set `PAYOUT_SPLIT_FROM_CLAIM_WALLET=true` to first split the race amount from `CLAIM_WALLET_PRIVATE_KEY`/`PAYOUT_SIGNER_PRIVATE_KEY` into the two reward wallets plus the Championship Vault.
 

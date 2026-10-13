@@ -8,7 +8,15 @@ let repository: BullrunRepository | null = null;
 
 export function getRepository(): BullrunRepository {
   if (!repository) {
-    repository = isSupabaseConfigured() ? new SupabaseRepository() : new MemoryRepository();
+    if (isSupabaseConfigured()) {
+      repository = new SupabaseRepository();
+    } else if (process.env.NODE_ENV === "production" && process.env.TEST_MODE !== "true") {
+      throw new Error(
+        "Persistent storage is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before serving production race data.",
+      );
+    } else {
+      repository = new MemoryRepository();
+    }
   }
 
   return repository;
