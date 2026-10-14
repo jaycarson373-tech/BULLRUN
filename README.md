@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Without Supabase env vars the app runs against seeded in-memory data. The local admin key is `dev-admin`.
+Without Supabase env vars, local development runs against seeded in-memory data. Production always requires Supabase and live market data; `TEST_MODE=true` cannot enable in-memory storage or generated market caps in production. The local admin key is `dev-admin`.
 
 ## Supabase
 
@@ -27,7 +27,10 @@ If the database already exists, run `supabase/payouts.sql` once before enabling 
 
 ## Worker
 
-Railway can run the worker as either a daemon or one-shot cron.
+Railway can run the worker as either a daemon or one-shot cron. In production,
+this worker is the sole race scheduler; public website/API requests never advance
+races or payouts. The local-only `API_ENABLE_AUTO_TICK` switch is ignored in
+production so web scaling cannot create competing schedulers.
 
 ```bash
 npm run worker
@@ -43,6 +46,16 @@ Copy `.env.example` to `.env.local` for the Vercel app and to Railway variables 
 For the fixed-supply BULLRUN setup, set `TOKEN_FIXED_SUPPLY=1000000000`. Displayed market cap is `live price * 1B`, and race winners are selected by the highest market cap among the 4 bulls at the race end snapshot. `HELIUS_API_KEY` enables CA-based price lookup through Helius `getAsset` when Helius returns `token_info.price_info`; `MARKET_CAP_API_URL` can still override this with direct market caps or prices.
 
 Set `NEXT_PUBLIC_BULLRUN_CA` and `NEXT_PUBLIC_BULLRUN_X_URL` to show the header CA copy button and X link. Footer buttons appear when `NEXT_PUBLIC_PUMP_FUN_URL`, `NEXT_PUBLIC_DEXSCREENER_URL`, `NEXT_PUBLIC_BUY_BULLRUN_URL`, or `NEXT_PUBLIC_COINGECKO_URL` are set.
+
+`GET /api/health` checks persistent storage reachability and reports the selected market-data mode. A 503 response means the site cannot serve a persistent league. The endpoint does not expose credentials or claim to verify market-provider reachability.
+
+Before announcing the production site, verify that the canonical host is bound to this Next.js app and not an unrelated static deployment:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://your-production-host.example npm run preflight:production
+```
+
+The preflight requires `/api/health`, `/api/current-race`, and `/api/standings` to return their expected JSON shapes, and requires the persistent database health check to pass. It does not verify market-provider freshness, payout wallets, or race settlement; those need separate funded staging checks.
 
 Automated payouts are Railway-only and are disabled unless `PAYOUT_EXECUTION_ENABLED=true`. The worker snapshots holders at race completion, requires winning-bull holders to also hold at least `BULLRUN_MIN_HOLDING`, weights both payout groups by token holdings, filters payouts below `MIN_PAYOUT_SOL`, and sends SOL from the configured reward vault private keys. Fund the reward wallets before enabling this, or set `PAYOUT_SPLIT_FROM_CLAIM_WALLET=true` to first split the race amount from `CLAIM_WALLET_PRIVATE_KEY`/`PAYOUT_SIGNER_PRIVATE_KEY` into the two reward wallets plus the Championship Vault.
 

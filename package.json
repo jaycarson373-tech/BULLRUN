@@ -6,6 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "preflight:production": "node scripts/verify-production-origin.mjs",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "worker": "tsx src/worker/index.ts",
@@ -13,25 +15,25 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
-    "@solana/web3.js": "^1.98.4",
+    "@solana/web3.js": "3.0.2",
     "@supabase/supabase-js": "2.108.2",
     "bs58": "^6.0.0",
     "lucide-react": "1.21.0",
-    "next": "16.2.9",
+    "next": "16.4.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "ws": "^8.21.0",
     "zod": "4.2.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.1",
+    "@tailwindcss/postcss": "4.3.3",
     "@types/bs58": "^4.0.4",
     "@types/node": "24.10.2",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@types/ws": "^8.18.1",
     "eslint": "9.39.2",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "16.4.0",
     "tailwindcss": "4.3.1",
     "tsx": "4.22.4",
     "typescript": "6.0.3"

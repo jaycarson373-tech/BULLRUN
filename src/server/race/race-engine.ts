@@ -7,6 +7,7 @@ import { attachPayoutPlanToDistribution, executeReadyDistributions } from "../pa
 import { getRepository } from "../repositories/repository";
 import type { BullrunRepository } from "../repositories/types";
 import { applyCompletedRaceToStandings } from "../standings/standings-service";
+import { getRaceWindowBlockReason, hasCompleteMarketCapSnapshot } from "./race-window-safety";
 
 function bullsForRace(race: Race, bulls: Bull[]): Bull[] {
   const byId = new Map(bulls.map((bull) => [bull.id, bull]));
@@ -29,6 +30,9 @@ function deriveWeek(raceNumber: number): number {
 
 async function startRace(repo: BullrunRepository, race: Race, bulls: Bull[], now: Date): Promise<Race> {
   const snapshotStart = race.snapshotStart ?? (await getMarketCapSnapshot(bulls, race, new Date(race.startTime)));
+  if (!hasCompleteMarketCapSnapshot(snapshotStart, race.bullIds)) {
+    throw new Error(`Race ${race.raceNumber} start snapshot is incomplete; refusing to begin the race.`);
+  }
   const liveMarketCaps = await getMarketCapSnapshot(bulls, race, now);
   const next: Race = {
     ...race,
@@ -56,6 +60,12 @@ async function updateLiveRace(repo: BullrunRepository, race: Race, bulls: Bull[]
 async function completeRace(repo: BullrunRepository, race: Race, bulls: Bull[], completedAt: Date): Promise<Race> {
   const snapshotStart = race.snapshotStart ?? (await getMarketCapSnapshot(bulls, race, new Date(race.startTime)));
   const snapshotEnd = race.snapshotEnd ?? (await getMarketCapSnapshot(bulls, race, completedAt));
+  if (!hasCompleteMarketCapSnapshot(snapshotStart, race.bullIds)) {
+    throw new Error(`Race ${race.raceNumber} start snapshot is incomplete; refusing to finalize the result.`);
+  }
+  if (!hasCompleteMarketCapSnapshot(snapshotEnd, race.bullIds)) {
+    throw new Error(`Race ${race.raceNumber} end snapshot is incomplete; refusing to finalize the result.`);
+  }
   const winner = race.winner ?? getWinnerFromSnapshots(snapshotStart, snapshotEnd);
   const next: Race = {
     ...race,
@@ -116,6 +126,18 @@ export async function runRaceEngineTick(options: { now?: Date; repo?: BullrunRep
 
     if (race.status === "completed" || race.status === "paused") {
       continue;
+    }
+
+    const blockedReason = getRaceWindowBlockReason(race, now);
+    if (blockedReason) {
+      await repo.updateSeason({ ...season, paused: true, updatedAt: now.toISOString() });
+      await repo.appendLog("error", "Season paused after missing a race market-cap capture window", {
+        raceId: race.id,
+        raceNumber: race.raceNumber,
+        reason: blockedReason,
+        checkedAt: now.toISOString(),
+      });
+      return;
     }
 
     if (now >= end) {

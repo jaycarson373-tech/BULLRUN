@@ -1,4 +1,6 @@
 import { LAUNCH_BULLRUN_CA } from "@/lib/constants";
+import { apiAutoTickEnabled } from "@/lib/api-auto-tick.mjs";
+import { mockMarketDataEnabled } from "@/lib/mock-data-policy.mjs";
 
 export function readEnv(name: string): string | undefined {
   const value = process.env[name];
@@ -14,9 +16,9 @@ export const config = {
   seasonStartIso: readEnv("SEASON_START_ISO"),
   workerMode: readEnv("WORKER_MODE") ?? "cron",
   workerPollMs: Number(readEnv("WORKER_POLL_MS") ?? 30000),
-  apiEnableAutoTick: (readEnv("API_ENABLE_AUTO_TICK") ?? "true") !== "false",
+  apiEnableAutoTick: apiAutoTickEnabled(process.env),
   defaultCreatorFeeSol: Number(readEnv("DEFAULT_CREATOR_FEE_SOL") ?? 2),
-  testMode: (readEnv("TEST_MODE") ?? "false") === "true",
+  testMode: mockMarketDataEnabled(process.env),
   bullrunMint: readEnv("BULLRUN_MINT") ?? readEnv("NEXT_PUBLIC_BULLRUN_CA") ?? LAUNCH_BULLRUN_CA,
   bullrunMinHolding: Number(readEnv("BULLRUN_MIN_HOLDING") ?? 100_000),
   winningBullRewardVault: readEnv("WINNING_BULL_REWARD_VAULT"),

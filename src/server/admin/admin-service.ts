@@ -3,11 +3,12 @@ import { z } from "zod";
 import { nowIso } from "@/lib/time";
 import type { Bull, Race } from "@/types/domain";
 
-import { markDistributionComplete } from "../distributions/distribution-service";
+import { markDistributionComplete, queueDistribution } from "../distributions/distribution-service";
 import { getRepository } from "../repositories/repository";
 import type { BullrunRepository } from "../repositories/types";
 import { forceCompleteNextRace, runRaceEngineTick } from "../race/race-engine";
 import { recalculateStandingsFromHistory } from "../standings/standings-service";
+import { getWinnerOverrideBlockReason } from "./winner-override-safety";
 
 export const bullUpdateSchema = z.object({
   name: z.string().min(1).optional(),
@@ -117,8 +118,21 @@ async function overrideWinner(repo: BullrunRepository, raceId: string, winner: s
     throw Object.assign(new Error("Winner must be one of the race bulls"), { status: 400 });
   }
 
-  await repo.upsertRace({ ...race, winner, status: "completed" });
+  const existingDistribution = await repo.getDistribution(`distribution-${race.id}`);
+  const blockReason = getWinnerOverrideBlockReason(race, Boolean(existingDistribution));
+  if (blockReason) {
+    const message = blockReason === "race-not-completed"
+      ? "Only a completed race can have its winner corrected."
+      : blockReason === "race-snapshot-incomplete"
+        ? "Winner corrections require complete, timestamped start and end snapshots for every entrant."
+        : "A distribution already exists for this race; its winner cannot be changed through this action.";
+    throw Object.assign(new Error(message), { status: 409 });
+  }
+
+  const correctedRace = { ...race, winner };
+  await repo.upsertRace(correctedRace);
   await recalculateStandingsFromHistory(repo);
+  await queueDistribution(repo, correctedRace);
   await repo.appendLog("warn", "Winner overridden", { raceId, winner });
 }
 

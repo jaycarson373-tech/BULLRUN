@@ -7,10 +7,10 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-import bs58 from "bs58";
 
 import { config } from "@/lib/config";
 import type { PayoutRecipient } from "@/types/domain";
+import { keypairFromPrivateKey } from "./keypair-from-private-key.mjs";
 
 export interface TransferBatchResult {
   signatures: string[];
@@ -24,17 +24,6 @@ function getRpcUrl(): string {
   }
 
   return url;
-}
-
-export function keypairFromPrivateKey(privateKey: string): Keypair {
-  const trimmed = privateKey.trim();
-
-  if (trimmed.startsWith("[")) {
-    const bytes = JSON.parse(trimmed) as number[];
-    return Keypair.fromSecretKey(Uint8Array.from(bytes));
-  }
-
-  return Keypair.fromSecretKey(bs58.decode(trimmed));
 }
 
 function assertExpectedPublicKey(keypair: Keypair, expectedPublicKey?: string): void {
@@ -67,7 +56,7 @@ export async function transferSolToRecipients(options: {
   expectedPublicKey?: string;
   recipients: PayoutRecipient[];
 }): Promise<TransferBatchResult> {
-  const keypair = keypairFromPrivateKey(options.privateKey);
+  const keypair = await keypairFromPrivateKey(options.privateKey);
   assertExpectedPublicKey(keypair, options.expectedPublicKey);
 
   const recipients = options.recipients.filter((recipient) => recipientLamports(recipient) > 0);
