@@ -1,5 +1,5 @@
 import { isSupabaseConfigured } from "@/lib/config";
-import { productionRequiresPersistentStorage } from "./storage-policy.mjs";
+import { persistentStorageUnavailableError, productionRequiresPersistentStorage } from "./storage-policy.mjs";
 
 import { MemoryRepository } from "./memory-repository";
 import { SupabaseRepository } from "./supabase-repository";
@@ -12,9 +12,7 @@ export function getRepository(): BullrunRepository {
     if (isSupabaseConfigured()) {
       repository = new SupabaseRepository();
     } else if (productionRequiresPersistentStorage(process.env)) {
-      throw new Error(
-        "Persistent storage is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before serving production race data.",
-      );
+      throw persistentStorageUnavailableError();
     } else {
       repository = new MemoryRepository();
     }
