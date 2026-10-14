@@ -46,6 +46,17 @@ async function inspectRoute(baseUrl, route, fetchImpl) {
   }
 
   const contentType = response.headers.get("content-type") ?? "";
+  if (response.url) {
+    let responseOrigin;
+    try {
+      responseOrigin = new URL(response.url).origin;
+    } catch {
+      return { path: route.path, ok: false, status: response.status, reason: "response URL is invalid" };
+    }
+    if (responseOrigin !== new URL(baseUrl).origin) {
+      return { path: route.path, ok: false, status: response.status, reason: "request redirected to a different origin" };
+    }
+  }
   if (!response.ok) {
     return { path: route.path, ok: false, status: response.status, reason: "HTTP request failed" };
   }

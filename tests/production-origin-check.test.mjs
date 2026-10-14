@@ -9,6 +9,12 @@ function response(body, { status = 200, contentType = "application/json" } = {})
   });
 }
 
+function responseFromDifferentOrigin(body, url) {
+  const result = response(body);
+  Object.defineProperty(result, "url", { value: url });
+  return result;
+}
+
 test("rejects a static HTML site even when it returns HTTP 200 for API paths", async () => {
   const result = await verifyProductionOrigin("https://bullrun.example", async () =>
     response("<!doctype html><html>other app</html>", { contentType: "text/html; charset=utf-8" }),
@@ -17,6 +23,18 @@ test("rejects a static HTML site even when it returns HTTP 200 for API paths", a
   assert.equal(result.ok, false);
   assert.deepEqual(result.results.map(({ ok }) => ok), [false, false, false]);
   assert.match(result.results[0].reason, /expected JSON/);
+});
+
+test("rejects API responses redirected to a different origin", async () => {
+  const result = await verifyProductionOrigin("https://bullrun.example", async () =>
+    responseFromDifferentOrigin(
+      { ok: true, databaseConfigured: true, databaseReachable: true },
+      "https://other-app.example/api/health",
+    ),
+  );
+
+  assert.equal(result.ok, false);
+  assert.ok(result.results.every(({ reason }) => reason === "request redirected to a different origin"));
 });
 
 test("requires a healthy persistent database and the expected BULLRUN route shapes", async () => {
